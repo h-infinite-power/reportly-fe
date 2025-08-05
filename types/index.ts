@@ -65,3 +65,54 @@ export interface AnalysisFormData {
   industryNo: string;
   competitorCompanyNoList: string[];
 }
+
+// Result Page Types
+export interface TotalScoreData {
+  targetRank: number;
+  targetCompanyNo: string;
+  targetTotalScore: number;
+  competitorAvgTotalScore: number;
+  totalCompanyCount: number;
+}
+
+export interface CategoryScore {
+  categoryNo: string;
+  categoryName: string;
+  companyScore: number;
+}
+
+export interface AnalysisResultStatistics {
+  targetCompanyCategoryScoreList: CategoryScore[];
+  competitorCategoryAvgScoreList: CategoryScore[];
+}
+
+export interface AnalysisResultScores {
+  categoryNo: string;
+  categoryName: string;
+  companyScore: number;
+}
+
+export interface CompanyInfo {
+  companyNo: string;
+  companyName: string;
+  summary: string;
+  content?: string;
+  positiveKeyword?: string[];
+  negativeKeyword?: string[];
+  companyCategoryScore: number;
+}
+
+export interface QAData {
+  questionNo: string;
+  categoryNo: string;
+  question: string;
+  targetCompanyInfo: CompanyInfo;
+  competitorCompanyInfo: CompanyInfo[];
+}
+
+export interface AnalysisResultDetail {
+  strongPoint: string;
+  weakPoint: string;
+  improvements: string;
+  qaList: QAData[];
+}

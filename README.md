@@ -1,37 +1,128 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Reportly - LLM 시선 기반 브랜드 평가 시스템
 
-## Getting Started
+LLM이 인식하는 브랜드 이미지를 분석하고, 경쟁사와의 포지셔닝을 시각화하여 제공하는 시스템입니다.
 
-First, run the development server:
+## 🚀 시작하기
+
+### 1. 의존성 설치
+
+```bash
+npm install
+```
+
+### 2. 환경 설정
+
+프로젝트 루트에 `.env.local` 파일을 생성하고 다음 내용을 추가하세요:
+
+```bash
+# 로컬 개발 환경 (Node.js 서버가 8080 포트에서 실행될 때)
+NEXT_PUBLIC_API_BASE_URL=http://localhost:8080/reportly-api
+
+# 프로덕션 환경 (기본값)
+# NEXT_PUBLIC_API_BASE_URL=https://h-infinite-power.store/reportly-api
+```
+
+### 3. 개발 서버 실행
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+브라우저에서 [http://localhost:3001](http://localhost:3001)을 열어 애플리케이션을 확인하세요.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 🔧 환경 설정
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### 로컬 개발 환경
 
-## Learn More
+1. **Node.js 백엔드 서버 실행** (8080 포트)
+2. **환경 변수 설정**:
+   ```bash
+   NEXT_PUBLIC_API_BASE_URL=http://localhost:8080/reportly-api
+   ```
+3. **프론트엔드 실행**:
+   ```bash
+   npm run dev
+   ```
 
-To learn more about Next.js, take a look at the following resources:
+### 프로덕션 환경
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+1. **환경 변수 설정** (선택사항):
+   ```bash
+   NEXT_PUBLIC_API_BASE_URL=https://h-infinite-power.store/reportly-api
+   ```
+2. **빌드 및 배포**:
+   ```bash
+   npm run build
+   npm start
+   ```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 📊 기능
 
-## Deploy on Vercel
+### 메인페이지
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- 브랜드 선택 (API에서 동적 로드)
+- 업종 선택 (이커머스, 금융/핀테크 등)
+- 경쟁사 선택 (최대 3개)
+- AI 분석 시작
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
-# reportly-fe
+### 결과페이지
+
+- 종합 점수 및 경쟁력 순위
+- 강점/약점 카테고리 분석
+- AI 인사이트 요약 (강점, 약점, 개선제안)
+- 카테고리별 점수 차트
+- 레이더 차트 (경쟁사 비교)
+- 프롬프트 분석 상세 내용
+
+## 🛠️ 기술 스택
+
+- **Frontend**: Next.js 15, TypeScript, TailwindCSS
+- **상태 관리**: React Hooks
+- **API**: RESTful API 연동
+- **개발 도구**: ESLint, Prettier
+
+## 📁 프로젝트 구조
+
+```
+reportly-fe/
+├── app/                    # Next.js App Router
+│   ├── page.tsx           # 메인페이지
+│   └── result/
+│       └── page.tsx       # 결과페이지
+├── components/             # 재사용 가능한 컴포넌트
+├── hooks/                 # 커스텀 훅
+├── lib/                   # 유틸리티 및 API 클라이언트
+├── types/                 # TypeScript 타입 정의
+└── docs/                  # 프로젝트 문서
+```
+
+## 🔍 테스트
+
+### 더미데이터 테스트
+
+현재 API 서버가 없어도 더미데이터로 테스트할 수 있습니다:
+
+1. 브라우저 개발자 도구 콘솔 열기 (F12)
+2. 메인페이지에서 브랜드, 업종, 경쟁사 선택
+3. "AI 분석 시작하기" 클릭
+4. 콘솔에서 API 호출 로그 및 더미데이터 확인
+
+### 로컬 API 서버 테스트
+
+Node.js 백엔드 서버를 8080 포트에서 실행하면 실제 API와 연동됩니다.
+
+## 📝 API 문서
+
+자세한 API 명세는 `docs/rest-api/` 폴더를 참조하세요.
+
+## 🤝 기여하기
+
+1. Fork the Project
+2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the Branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+## 📄 라이선스
+
+이 프로젝트는 MIT 라이선스 하에 배포됩니다.
