@@ -1,5 +1,6 @@
 "use client";
 
+import { Suspense } from "react";
 import { useState } from "react";
 import { ChevronLeft, ChevronDown } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -15,7 +16,7 @@ import { ErrorDisplay } from "@/components/ErrorDisplay";
 import Footer from "@/components/Footer";
 import { useResultData } from "@/hooks/use-result-data";
 
-export default function ResultsPage() {
+function ResultsPage() {
   const router = useRouter();
   const [expandedPrompts, setExpandedPrompts] = useState<number[]>([0]);
 
@@ -285,5 +286,13 @@ export default function ResultsPage() {
         <Footer />
       </div>
     </div>
+  );
+}
+
+export default function ResultsPageWrapper() {
+  return (
+    <Suspense fallback={<div>로딩 중...</div>}>
+      <ResultsPage />
+    </Suspense>
   );
 }

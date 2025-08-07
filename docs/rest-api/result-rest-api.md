@@ -2,7 +2,7 @@
 
 ## 분석결과 API
 
-### **GET /reportly-api/analysis-results/total-score-list**
+### **GET /reportly-api/jobs/{jobNo}/total-score-list**
 
 - **설명**
   - 경쟁사와 우리 회사의 절대 점수를 비교한 데이터 반환
@@ -11,7 +11,7 @@
   - **사용처 예시**
     - 결과지 화면 최상단에서 종합 점수, 경쟁력 순위
 - **요청값**
-  - 없음 (분석결과 context는 인증된 사용자 기준으로 조회)
+  - 없음
 - **응답**
   - **200 OK**
     ```json
@@ -29,10 +29,12 @@
       "error": "분석결과를 찾을 수 없습니다."
     }
     ```
+- 개발 프로세스
+  -
 
 ---
 
-### **GET /reportly-api/analysis-results/{analysisResultId}/analysis-result-score-statistics**
+### **GET /reportly-api/jobs/{jobNo}/analysis-result-score-statistics**
 
 - **설명**
   - 경쟁사 및 타겟 회사의 카테고리별 평균 점수 통계 데이터 반환
@@ -41,7 +43,7 @@
   - 약점 카테고리
   - 경쟁사 비교 그래프
 - **요청값**
-  - `analysisResultId`: 분석결과 ID
+  - 없음
 - **응답**
   - **200 OK**
   ```json
@@ -52,12 +54,12 @@
   			  {
   			    "categoryNo": "10",
   			    "categoryName": "브랜딩",
-  			    "companyScore": 92,
+  			    "categoryScore": 92,
   			  },
   			  {
   			    "categoryNo": "11",
   			    "categoryName": "마케팅",
-  			    "companyScore": 88,
+  			    "categoryScore": 88,
   			  } , ...
   		],
   		"competitorCategoryAvgScoreList" : /* 경쟁사들의 카테고리별 평균 점수 -> 경쟁사 비교 그래프 에서 사용 */
@@ -65,12 +67,12 @@
   			  {
   			    "categoryNo": "10",
   			    "categoryName": "브랜딩",
-  			    "companyScore": 92,
+  			    "categoryScore": 92,
   			  },
   			  {
   			    "categoryNo": "11",
   			    "categoryName": "마케팅",
-  			    "companyScore": 88,
+  			    "categoryScore": 88,
   			  }, ...
   		]
   }
@@ -84,17 +86,41 @@
 
 ---
 
-### **GET /reportly-api/analysis-results/{analysisResultId}/analysis-result-scores**
+### **GET /reportly-api/jobs/{jobNo}/analysisResults/info**
+
+- **설명**
+  - `GET /reportly-api/analysis-results/{analysisResultNo}/analysis-result-scores` api 를 사용하기 위해 회사명, analysisResultNo 의 목록을 조회해주는 api
+  - **사용처 예시**
+    - `카테고리별 점수`의 select box
+- **응답**
+
+  - **200 OK**
+
+    ```json
+    [
+      {
+        "companyNo": "1",
+        "companyName": "삼성전자",
+        "analysisResultNo": "2",
+        "targetCompanyYn" : "Y" /* 타겟 회사 여부 */
+      },
+      {
+        "companyNo": "1",
+        "companyName": "삼성전자",
+        "analysisResultNo": "2",
+        "targetCompanyYn" : "N" /* 타겟 회사 여부, 경쟁회사는 모두 N */,
+      }, ...
+    ]
+    ```
+
+---
+
+### **GET /reportly-api/analysis-results/{analysisResultNo}/analysis-result-scores**
 
 - **설명**
   - 셀렉트 박스로 선택된 경쟁사의 카테고리별 점수 조회
   - **사용처 예시**
     - `카테고리별 점수` 영역
-- **요청값**
-  - path variable
-    - `analysisResultId`: 분석결과 ID
-  - Query Param
-    - `companyNo` : 선택된 경쟁사 번호
 - **응답**
   - **200 OK**
     ```json
@@ -149,7 +175,7 @@
     				    "targetCompanyInfo" : {
     				    		"comnpanyNo": "1",
     							  "companyName": "삼성전자",
-    						    "summary": "요약".
+    						    "summary": "요약",
     					      "content": "브랜딩 전략이 경쟁사 대비 우수합니다.",
     					      "positiveKeyword" : ["반도체", "1등", "기획"],
     					      "negativeKeyword" : ["최악", "사망", "주가폭락"],

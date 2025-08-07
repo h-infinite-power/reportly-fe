@@ -2,6 +2,29 @@
 
 ### 1️⃣ 브랜드 API
 
+### **POST /reportly-api/companies**
+
+- **설명**
+
+  - 메인 페이지에서 `selectBox` 목록에 해당하는 부분을 저장하는데 사용
+  - **요청값**
+
+    ```
+    {
+      "companyName": "스타벅스" /* 브랜드 이름 */
+    }
+    ```
+
+- **응답**
+
+  - **200 OK**
+
+    ```json
+    {
+      "companyNo": "101"
+    }
+    ```
+
 ### **GET /reportly-api/companies**
 
 - **설명**
@@ -79,6 +102,29 @@
     ```json
     {
       "error": "예상치 못한 서버 에러입니다."
+    }
+    ```
+
+### **POST /reportly-api/industries**
+
+- **설명**
+
+  - 메인 페이지에서 `selectBox` 목록에 해당하는 부분을 저장하는데 사용
+  - **요청값**
+
+    ```
+    {
+      "industryName": "스타벅스" /* 업종 이름 */
+    }
+    ```
+
+- **응답**
+
+  - **200 OK**
+
+    ```json
+    {
+      "industryNo": "101"
     }
     ```
 
