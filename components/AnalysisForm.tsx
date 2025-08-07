@@ -15,6 +15,13 @@ export function AnalysisForm() {
     handleIndustryChange,
     handleCompetitorChange,
     handleSubmit,
+    // 추가
+    newCompanyName,
+    setNewCompanyName,
+    newIndustryName,
+    setNewIndustryName,
+    handleAddCompany,
+    handleAddIndustry,
   } = useAnalysisForm();
 
   return (
@@ -47,6 +54,29 @@ export function AnalysisForm() {
             </select>
             <ChevronDown className="absolute right-4 top-1/2 transform -translate-y-1/2 w-4 h-4 text-[#F7F8F8] pointer-events-none rotate-0" />
           </div>
+          {/* 브랜드명 입력 + 추가하기 */}
+          <div className="flex gap-2 mt-2">
+            <input
+              type="text"
+              value={newCompanyName}
+              onChange={(e) => setNewCompanyName(e.target.value)}
+              placeholder="브랜드명 입력"
+              className="flex-1 h-[44px] px-3 bg-white/4 border border-white/10 rounded-lg text-base text-[#D0D6E0] focus:outline-none focus:ring-2 focus:ring-[#4989DD]"
+              disabled={loading}
+            />
+            <button
+              type="button"
+              onClick={handleAddCompany}
+              disabled={loading || !newCompanyName.trim()}
+              className={`h-[44px] px-4 rounded-lg text-base font-medium transition-all duration-200 ${
+                newCompanyName.trim() && !loading
+                  ? "bg-gradient-to-r from-[#4989DD] to-[#4E49DD] text-white hover:opacity-90"
+                  : "bg-[#232326] text-[#8A8F98] cursor-not-allowed"
+              }`}
+            >
+              추가하기
+            </button>
+          </div>
         </div>
 
         {/* Industry Selection */}
@@ -69,6 +99,29 @@ export function AnalysisForm() {
               ))}
             </select>
             <ChevronDown className="absolute right-4 top-1/2 transform -translate-y-1/2 w-4 h-4 text-[#F7F8F8] pointer-events-none rotate-0" />
+          </div>
+          {/* 업종명 입력 + 추가하기 */}
+          <div className="flex gap-2 mt-2">
+            <input
+              type="text"
+              value={newIndustryName}
+              onChange={(e) => setNewIndustryName(e.target.value)}
+              placeholder="업종명 입력"
+              className="flex-1 h-[44px] px-3 bg-white/4 border border-white/10 rounded-lg text-base text-[#D0D6E0] focus:outline-none focus:ring-2 focus:ring-[#4989DD]"
+              disabled={loading}
+            />
+            <button
+              type="button"
+              onClick={handleAddIndustry}
+              disabled={loading || !newIndustryName.trim()}
+              className={`h-[44px] px-4 rounded-lg text-base font-medium transition-all duration-200 ${
+                newIndustryName.trim() && !loading
+                  ? "bg-gradient-to-r from-[#4989DD] to-[#4E49DD] text-white hover:opacity-90"
+                  : "bg-[#232326] text-[#8A8F98] cursor-not-allowed"
+              }`}
+            >
+              추가하기
+            </button>
           </div>
         </div>
 

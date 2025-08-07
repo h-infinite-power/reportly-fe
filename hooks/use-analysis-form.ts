@@ -17,6 +17,10 @@ export function useAnalysisForm() {
     competitorCompanyNoList: ["", "", ""],
   });
 
+  // 추가 입력 상태
+  const [newCompanyName, setNewCompanyName] = useState("");
+  const [newIndustryName, setNewIndustryName] = useState("");
+
   // 데이터 로딩
   useEffect(() => {
     const loadData = async () => {
@@ -99,6 +103,40 @@ export function useAnalysisForm() {
     }
   };
 
+  // 브랜드 추가 핸들러
+  const handleAddCompany = async () => {
+    if (!newCompanyName.trim()) return;
+    setLoading(true);
+    try {
+      const added = await apiClient.addCompany(newCompanyName.trim());
+      setCompanies((prev) => [...prev, added]);
+      setNewCompanyName("");
+      console.log("브랜드 추가 성공:", added);
+    } catch (err) {
+      setError("브랜드 추가 실패");
+      console.error("브랜드 추가 실패:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // 업종 추가 핸들러
+  const handleAddIndustry = async () => {
+    if (!newIndustryName.trim()) return;
+    setLoading(true);
+    try {
+      const added = await apiClient.addIndustry(newIndustryName.trim());
+      setIndustries((prev) => [...prev, added]);
+      setNewIndustryName("");
+      console.log("업종 추가 성공:", added);
+    } catch (err) {
+      setError("업종 추가 실패");
+      console.error("업종 추가 실패:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return {
     companies,
     industries,
@@ -110,5 +148,12 @@ export function useAnalysisForm() {
     handleIndustryChange,
     handleCompetitorChange,
     handleSubmit,
+    // 추가
+    newCompanyName,
+    setNewCompanyName,
+    newIndustryName,
+    setNewIndustryName,
+    handleAddCompany,
+    handleAddIndustry,
   };
 }

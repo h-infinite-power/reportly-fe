@@ -247,6 +247,30 @@ class ApiClient {
     return this.request<Industry[]>("/industries");
   }
 
+  // 브랜드 추가
+  async addCompany(companyName: string): Promise<Company> {
+    console.log("📢 브랜드 추가 요청:", companyName);
+    // 실제 API 호출 (엔드포인트 명확히)
+    const res = await this.request<{ companyNo: string }>("/companies", {
+      method: "POST",
+      body: JSON.stringify({ companyName }),
+    });
+    // 응답값이 번호만 오므로 이름과 조합
+    return { companyNo: res.companyNo, companyName };
+  }
+
+  // 업종 추가
+  async addIndustry(industryName: string): Promise<Industry> {
+    console.log("📢 업종 추가 요청:", industryName);
+    // 실제 API 호출 (엔드포인트 명확히)
+    const res = await this.request<{ industryNo: string }>("/industries", {
+      method: "POST",
+      body: JSON.stringify({ industryName }),
+    });
+    // 응답값이 번호만 오므로 이름과 조합
+    return { industryNo: res.industryNo, industryName };
+  }
+
   // 분석 결과 생성
   async createAnalysisResult(data: AnalysisRequest): Promise<AnalysisResult> {
     console.log("📊 분석 요청 데이터:", data);
