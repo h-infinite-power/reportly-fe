@@ -145,7 +145,12 @@ export function AnalysisForm() {
                   {companies
                     .filter(
                       (company) =>
-                        company.companyNo !== formData.targetCompanyNo
+                        company.companyNo !== formData.targetCompanyNo &&
+                        (formData.competitorCompanyNoList[index] ===
+                          company.companyNo ||
+                          !formData.competitorCompanyNoList.includes(
+                            company.companyNo
+                          ))
                     )
                     .map((company) => (
                       <option key={company.companyNo} value={company.companyNo}>
