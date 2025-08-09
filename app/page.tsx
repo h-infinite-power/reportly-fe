@@ -1,5 +1,6 @@
 "use client";
 
+import { Suspense } from "react";
 import { AnalysisForm } from "@/components/AnalysisForm";
 
 export default function Home() {
@@ -62,7 +63,9 @@ export default function Home() {
             </div>
 
             {/* Form Section */}
-            <AnalysisForm />
+            <Suspense fallback={<div>로딩 중...</div>}>
+              <AnalysisForm />
+            </Suspense>
           </div>
         </main>
       </div>
