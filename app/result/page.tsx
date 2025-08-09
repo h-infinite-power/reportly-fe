@@ -200,7 +200,7 @@ function ResultsPage() {
                 value={strongestCategory}
                 subtitle={`${Math.max(
                   ...statistics.targetCompanyCategoryScoreList.map(
-                    (cat) => cat.companyScore
+                    (cat) => cat.categoryScore
                   )
                 )}점 최고 득점`}
               />
@@ -209,7 +209,7 @@ function ResultsPage() {
                 value={weakestCategory}
                 subtitle={`${Math.min(
                   ...statistics.targetCompanyCategoryScoreList.map(
-                    (cat) => cat.companyScore
+                    (cat) => cat.categoryScore
                   )
                 )}점 최저 득점`}
               />

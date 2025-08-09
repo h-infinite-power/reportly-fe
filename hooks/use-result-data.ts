@@ -11,7 +11,8 @@ import { apiClient } from "@/lib/api";
 
 export function useResultData() {
   const searchParams = useSearchParams();
-  const analysisId = searchParams.get("analysisId");
+  const jobNo = searchParams.get("jobNo");
+  const analysisId = searchParams.get("analysisId"); // analysisResultNo
 
   const [totalScoreData, setTotalScoreData] = useState<TotalScoreData | null>(
     null
@@ -26,8 +27,8 @@ export function useResultData() {
   // 데이터 로딩
   useEffect(() => {
     const loadData = async () => {
-      if (!analysisId) {
-        setError("분석 ID가 없습니다.");
+      if (!jobNo || !analysisId) {
+        setError("jobNo 또는 분석 ID가 없습니다.");
         setLoading(false);
         return;
       }
@@ -37,8 +38,8 @@ export function useResultData() {
         setError(null);
 
         const [totalScore, statisticsData, detailData] = await Promise.all([
-          apiClient.getTotalScoreList(),
-          apiClient.getAnalysisResultStatistics(analysisId),
+          apiClient.getTotalScoreList(jobNo),
+          apiClient.getAnalysisResultStatistics(jobNo),
           apiClient.getAnalysisResultDetail(analysisId),
         ]);
 
@@ -54,7 +55,7 @@ export function useResultData() {
     };
 
     loadData();
-  }, [analysisId]);
+  }, [jobNo, analysisId]);
 
   // 카테고리 차트 데이터 변환
   const getCategoryChartData = (): CategoryData[] => {
@@ -66,65 +67,57 @@ export function useResultData() {
       );
       return {
         name: target.categoryName,
-        ourScore: target.companyScore,
-        competitorScore: competitor?.companyScore || 0,
+        ourScore: target.categoryScore,
+        competitorScore: competitor?.categoryScore || 0,
       };
     });
   };
 
-  // 강점 카테고리 찾기
+  // 강점 카테고리
   const getStrongestCategory = (): string => {
     if (!statistics) return "";
-
     const maxScore = Math.max(
       ...statistics.targetCompanyCategoryScoreList.map(
-        (cat) => cat.companyScore
+        (cat) => cat.categoryScore
       )
     );
-    const strongest = statistics.targetCompanyCategoryScoreList.find(
-      (cat) => cat.companyScore === maxScore
+    return (
+      statistics.targetCompanyCategoryScoreList.find(
+        (cat) => cat.categoryScore === maxScore
+      )?.categoryName || ""
     );
-    return strongest?.categoryName || "";
   };
 
-  // 약점 카테고리 찾기
+  // 약점 카테고리
   const getWeakestCategory = (): string => {
     if (!statistics) return "";
-
     const minScore = Math.min(
       ...statistics.targetCompanyCategoryScoreList.map(
-        (cat) => cat.companyScore
+        (cat) => cat.categoryScore
       )
     );
-    const weakest = statistics.targetCompanyCategoryScoreList.find(
-      (cat) => cat.companyScore === minScore
+    return (
+      statistics.targetCompanyCategoryScoreList.find(
+        (cat) => cat.categoryScore === minScore
+      )?.categoryName || ""
     );
-    return weakest?.categoryName || "";
   };
 
-  // 업계 평균 대비 백분율 계산
+  // 업계 평균 대비 백분율
   const getIndustryComparison = (): string => {
     if (!totalScoreData) return "";
-
-    const difference =
+    const diff =
       totalScoreData.targetTotalScore - totalScoreData.competitorAvgTotalScore;
-    const percentage =
-      (difference / totalScoreData.competitorAvgTotalScore) * 100;
-
-    if (percentage > 0) {
-      return `+${percentage.toFixed(1)}%`;
-    } else {
-      return `${percentage.toFixed(1)}%`;
-    }
+    const percent = (diff / totalScoreData.competitorAvgTotalScore) * 100;
+    return `${percent > 0 ? "+" : ""}${percent.toFixed(1)}%`;
   };
 
   // 프롬프트 데이터 변환
   const getPromptData = (): PromptData[] => {
     if (!detail) return [];
-
     return detail.qaList.map((qa) => ({
       question: qa.question,
-      category: qa.targetCompanyInfo.companyName, // 임시로 회사명 사용
+      category: qa.targetCompanyInfo.companyName,
       score: qa.targetCompanyInfo.companyCategoryScore,
       analysis: qa.targetCompanyInfo.content || qa.targetCompanyInfo.summary,
       positiveKeywords: qa.targetCompanyInfo.positiveKeyword || [],
@@ -138,6 +131,7 @@ export function useResultData() {
   };
 
   return {
+    jobNo,
     analysisId,
     totalScoreData,
     statistics,

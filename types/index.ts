@@ -78,7 +78,7 @@ export interface TotalScoreData {
 export interface CategoryScore {
   categoryNo: string;
   categoryName: string;
-  companyScore: number;
+  categoryScore: number;
 }
 
 export interface AnalysisResultStatistics {
@@ -89,7 +89,7 @@ export interface AnalysisResultStatistics {
 export interface AnalysisResultScores {
   categoryNo: string;
   categoryName: string;
-  companyScore: number;
+  categoryScore: number;
 }
 
 export interface CompanyInfo {
