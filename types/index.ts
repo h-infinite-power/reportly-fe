@@ -86,22 +86,25 @@ export interface AnalysisResultStatistics {
   competitorCategoryAvgScoreList: CategoryScore[];
 }
 
+// 수정: categoryScore -> companyScore로 변경 (API 명세 및 더미 참고)
 export interface AnalysisResultScores {
   categoryNo: string;
   categoryName: string;
-  categoryScore: number;
+  companyScore: number;
 }
 
+// CompanyInfo는 QA 데이터 내 targetCompanyInfo, competitorCompanyInfo 형태로 맞춤
 export interface CompanyInfo {
   companyNo: string;
   companyName: string;
   summary: string;
-  content?: string;
-  positiveKeyword?: string[];
+  content?: string; // 상세 내용은 optional
+  positiveKeyword?: string[]; // 복수형 키워드 배열로 변경
   negativeKeyword?: string[];
   companyCategoryScore: number;
 }
 
+// QA 데이터 구조에 맞춤
 export interface QAData {
   questionNo: string;
   categoryNo: string;

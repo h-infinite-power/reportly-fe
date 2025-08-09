@@ -11,26 +11,23 @@ import {
 
 // 환경에 따른 API 주소 설정
 const getApiBaseUrl = () => {
-  // 환경 변수 우선 확인
   if (process.env.NEXT_PUBLIC_API_BASE_URL) {
     return process.env.NEXT_PUBLIC_API_BASE_URL;
   }
 
   if (typeof window !== "undefined") {
-    // 클라이언트 사이드에서 환경 확인
     const hostname = window.location.hostname;
     if (hostname === "localhost" || hostname === "127.0.0.1") {
       return "http://localhost:8080/reportly-api";
     }
   }
 
-  // 프로덕션 환경 또는 서버 사이드
   return "https://h-infinite-power.store/reportly-api";
 };
 
 const API_BASE_URL = getApiBaseUrl();
 
-/* ------------------ 더미데이터 (명세/기존 예시 기반) ------------------ */
+/* ------------------ 더미데이터 (명세 기반) ------------------ */
 
 // 회사(브랜드) 더미
 const DUMMY_COMPANIES: Company[] = [
@@ -52,16 +49,16 @@ const DUMMY_INDUSTRIES: Industry[] = [
   { industryNo: "4", industryName: "프랜차이즈" },
 ];
 
-// 종합 점수 더미 (명세 예시와 동일)
+// 종합 점수 더미
 const DUMMY_TOTAL_SCORE: TotalScoreData = {
-  targetRank: 2,
+  targetRank: 1,
   targetCompanyNo: "101",
   targetTotalScore: 87,
   competitorAvgTotalScore: 76,
   totalCompanyCount: 4,
 };
 
-// 카테고리별 통계 더미 (명세에서 사용하는 key: categoryScore)
+// 카테고리별 통계 더미
 const DUMMY_STATISTICS: AnalysisResultStatistics = {
   targetCompanyCategoryScoreList: [
     { categoryNo: "10", categoryName: "브랜딩", categoryScore: 92 },
@@ -83,7 +80,7 @@ const DUMMY_STATISTICS: AnalysisResultStatistics = {
   ],
 };
 
-// 분석 결과 상세 더미 (QA 포함)
+// 분석 결과 상세 더미 (예시)
 const DUMMY_DETAIL: AnalysisResultDetail = {
   strongPoint:
     "스타벅스는 뛰어난 브랜드 인지도와 일관된 고품질 서비스로 경쟁사 대비 강력한 우위를 확보했습니다. 프리미엄 이미지와 고객 충성도가 높습니다.",
@@ -167,7 +164,7 @@ const DUMMY_DETAIL: AnalysisResultDetail = {
   ],
 };
 
-// 분석 결과에 포함된 회사(analysisResults/info) 더미
+// 분석 결과 회사 목록 더미
 const DUMMY_COMPANY_INFO = [
   {
     companyNo: "101",
@@ -181,6 +178,13 @@ const DUMMY_COMPANY_INFO = [
     analysisResultNo: "1002",
     targetCompanyYn: "N",
   },
+];
+
+// 분석 결과 카테고리별 점수 더미
+const DUMMY_ANALYSIS_RESULT_SCORES: AnalysisResultScores[] = [
+  { categoryNo: "10", categoryName: "브랜딩", companyScore: 92 },
+  { categoryNo: "11", categoryName: "마케팅", companyScore: 88 },
+  { categoryNo: "12", categoryName: "고객경험", companyScore: 85 },
 ];
 
 /* ------------------ API 클라이언트 ------------------ */
@@ -197,8 +201,6 @@ class ApiClient {
     options?: RequestInit
   ): Promise<T> {
     const url = `${this.baseUrl}${endpoint}`;
-
-    // 요청 로그
     console.log(`🚀 API 호출: ${url}`);
     console.log(
       `📍 환경: ${this.baseUrl.includes("localhost") ? "로컬" : "프로덕션"}`
@@ -219,87 +221,50 @@ class ApiClient {
 
       return (await response.json()) as T;
     } catch (error) {
-      // 네트워크/서버 실패 시 더미 데이터로 폴백
       console.warn(
         `❌ API 호출 실패 (${endpoint}). 더미데이터로 대체합니다.`,
         error
       );
 
-      // 엔드포인트별 더미 반환 로직
-      // 기존(레거시) endpoints 유지: "/companies", "/industries"
       if (endpoint === "/companies") {
-        console.log("📊 더미 브랜드 데이터 반환");
         return DUMMY_COMPANIES as unknown as T;
       }
       if (endpoint === "/industries") {
-        console.log("📊 더미 업종 데이터 반환");
         return DUMMY_INDUSTRIES as unknown as T;
       }
-
-      // jobs/{jobNo}/total-score-list
       if (endpoint.includes("/total-score-list")) {
-        console.log("📊 더미 종합 점수 데이터 반환");
         return DUMMY_TOTAL_SCORE as unknown as T;
       }
-
-      // jobs/{jobNo}/analysis-result-score-statistics
       if (endpoint.includes("analysis-result-score-statistics")) {
-        console.log("📊 더미 통계 데이터 반환");
         return DUMMY_STATISTICS as unknown as T;
       }
-
-      // jobs/{jobNo}/analysisResults/info
       if (endpoint.includes("/analysisResults/info")) {
-        console.log("📊 더미 분석 결과 회사 목록 반환");
         return DUMMY_COMPANY_INFO as unknown as T;
       }
-
-      // GET /analysis-results/{analysisResultNo}
       if (/\/analysis-results\/\d+$/.test(endpoint)) {
-        console.log("📊 더미 상세 분석 결과 반환");
         return DUMMY_DETAIL as unknown as T;
       }
-
-      // GET /analysis-results/{analysisResultNo}/analysis-result-scores?companyNo=...
       if (endpoint.includes("/analysis-result-scores")) {
-        // 간단한 샘플 점수 배열 반환 (카테고리별)
-        const sampleScores: AnalysisResultScores[] = [
-          { categoryNo: "10", categoryName: "브랜딩", categoryScore: 92 },
-          { categoryNo: "11", categoryName: "마케팅", categoryScore: 88 },
-          { categoryNo: "12", categoryName: "고객경험", categoryScore: 85 },
-        ];
-        console.log("📊 더미 카테고리 점수 반환");
-        return sampleScores as unknown as T;
+        return DUMMY_ANALYSIS_RESULT_SCORES as unknown as T;
       }
-
-      // POST /companies 또는 /industries -> 간단한 생성 응답 시뮬레이션
       if (endpoint === "/companies" && options?.method === "POST") {
-        // 간단히 랜덤 companyNo 생성
         const newNo = `${Math.floor(1000 + Math.random() * 9000)}`;
-        console.log("📢 더미 브랜드 생성 응답:", newNo);
         return { companyNo: newNo } as unknown as T;
       }
       if (endpoint === "/industries" && options?.method === "POST") {
         const newNo = `${Math.floor(1000 + Math.random() * 9000)}`;
-        console.log("📢 더미 업종 생성 응답:", newNo);
         return { industryNo: newNo } as unknown as T;
       }
-
-      // POST /jobs/{jobNo}/analysis-results (분석 생성) 시뮬레이션
       if (
         endpoint.includes("/analysis-results") &&
         options?.method === "POST"
       ) {
-        console.log("📢 더미 분석 결과 생성 응답: analysisResultNo=1001");
         return { analysisResultNo: "1001" } as unknown as T;
       }
 
-      // 알 수 없는 엔드포인트
       throw new Error(`Unknown endpoint (no dummy mapping): ${endpoint}`);
     }
   }
-
-  /* ------------------ API 메서드들 ------------------ */
 
   // (레거시) 브랜드 목록 조회
   async getCompanies(): Promise<Company[]> {
@@ -331,14 +296,12 @@ class ApiClient {
     return { industryNo: res.industryNo, industryName };
   }
 
-  // 분석 결과 생성 (명세 반영) — jobNo를 받아서 생성
-  // 서버에 실제 POST 할 경우: POST /jobs/{jobNo}/analysis-results
+  // 분석 결과 생성 (jobNo 기준)
   async createAnalysisResult(
     jobNo: string,
     data: AnalysisRequest
   ): Promise<AnalysisResult> {
     console.log("📊 분석 요청 데이터:", data, "jobNo:", jobNo);
-    // 실제 호출 예시(서버가 있으면):
     try {
       const res = await this.request<{ analysisResultNo: string }>(
         `/jobs/${jobNo}/analysis-results`,
@@ -349,18 +312,17 @@ class ApiClient {
       );
       return { analysisResultNo: res.analysisResultNo };
     } catch (e) {
-      // 폴백: 더미 결과 반환
       console.warn("분석 생성 실패 — 더미 결과 반환");
       return { analysisResultNo: "1001" };
     }
   }
 
-  // 종합 점수 목록 조회 (명세: jobs/{jobNo}/total-score-list)
+  // 종합 점수 목록 조회
   async getTotalScoreList(jobNo: string): Promise<TotalScoreData> {
     return this.request<TotalScoreData>(`/jobs/${jobNo}/total-score-list`);
   }
 
-  // 분석 결과 통계 조회 (명세: jobs/{jobNo}/analysis-result-score-statistics)
+  // 분석 결과 통계 조회
   async getAnalysisResultStatistics(
     jobNo: string
   ): Promise<AnalysisResultStatistics> {
@@ -369,7 +331,7 @@ class ApiClient {
     );
   }
 
-  // 분석 결과 회사 목록 조회 (명세: jobs/{jobNo}/analysisResults/info)
+  // 분석 결과 회사 목록 조회
   async getAnalysisResultsInfo(jobNo: string): Promise<
     {
       companyNo: string;
@@ -381,8 +343,7 @@ class ApiClient {
     return this.request(`/jobs/${jobNo}/analysisResults/info`);
   }
 
-  // 분석 결과의 카테고리별 점수 조회
-  // GET /analysis-results/{analysisResultNo}/analysis-result-scores?companyNo={companyNo}
+  // 분석 결과 카테고리별 점수 조회
   async getAnalysisResultScores(
     analysisResultNo: string,
     companyNo: string
@@ -393,7 +354,6 @@ class ApiClient {
   }
 
   // 분석 결과 상세 조회
-  // GET /analysis-results/{analysisResultNo}
   async getAnalysisResultDetail(
     analysisResultNo: string
   ): Promise<AnalysisResultDetail> {
