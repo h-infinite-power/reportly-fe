@@ -1,4 +1,6 @@
 import type { CategoryData } from "@/types";
+import { useEffect, useState } from "react";
+import { apiClient } from "@/lib/api";
 
 interface Company {
   companyNo: string;
@@ -6,10 +8,12 @@ interface Company {
 }
 
 interface CategoryChartProps {
-  data: CategoryData[];
-  companies: Company[]; // 경쟁사 목록
-  selectedCompetitor: string; // 선택된 경쟁사 번호
-  onCompetitorChange: (value: string) => void; // 변경 핸들러
+  data: any[];
+  companies: any[];
+  selectedCompetitor: string;
+  onCompetitorChange: (value: string) => void;
+  competitorData: { name: string; competitorScore: number }[]; // 추가
+  analysisId: string; // analysisId 추가
 }
 
 export default function CategoryChart({
@@ -17,7 +21,27 @@ export default function CategoryChart({
   companies,
   selectedCompetitor,
   onCompetitorChange,
+  competitorData,
+  analysisId, // analysisId 추가
 }: CategoryChartProps) {
+  const [competitorScores, setCompetitorScores] = useState<any[]>([]);
+
+  useEffect(() => {
+    async function fetchCompetitorScores() {
+      if (!selectedCompetitor) {
+        setCompetitorScores([]);
+        return;
+      }
+      const scores = await apiClient.getAnalysisResultScores(
+        analysisId,
+        selectedCompetitor
+      );
+      console.log("경쟁사 점수", scores); // ← 콘솔로 값 확인
+      setCompetitorScores(scores);
+    }
+    fetchCompetitorScores();
+  }, [selectedCompetitor, analysisId]);
+
   return (
     <div className="flex flex-col items-start p-6 gap-4 bg-white/4 border border-white/10 backdrop-blur-[4px] rounded-xl flex-[2]">
       <div className="flex flex-col gap-3 w-full">
@@ -57,46 +81,58 @@ export default function CategoryChart({
       </div>
 
       <div className="flex justify-between items-end w-full h-[197px]">
-        {data.map((category) => (
-          <div
-            key={category.name}
-            className="flex flex-col justify-center items-center p-2 gap-2 w-20 h-full"
-          >
-            <div className="flex items-center gap-2 w-16 h-[140px]">
-              <div className="relative w-7 h-[140px]">
-                <div className="absolute w-7 h-[140px] bg-white/6 rounded-[4px]" />
-                <div
-                  className="absolute w-7 bg-gradient-to-t from-[#4E49DD] to-[#6E9CBD] rounded-[4px] flex items-end justify-center pb-1"
-                  style={{
-                    height: `${(category.ourScore / 100) * 128}px`,
-                    bottom: "0px",
-                  }}
-                >
-                  <span className="text-sm font-semibold text-[#F7F8F8]">
-                    {category.ourScore}
-                  </span>
+        {data.map((category) => {
+          // competitorData에서 해당 카테고리의 점수 찾기
+          const competitor = competitorData.find(
+            (c) => c.name === category.name
+          );
+          return (
+            <div
+              key={category.name}
+              className="flex flex-col justify-center items-center p-2 gap-2 w-20 h-full"
+            >
+              <div className="flex items-center gap-2 w-16 h-[140px]">
+                {/* 우리 회사 점수 */}
+                <div className="relative w-7 h-[140px]">
+                  <div className="absolute w-7 h-[140px] bg-white/6 rounded-[4px]" />
+                  <div
+                    className="absolute w-7 bg-gradient-to-t from-[#4E49DD] to-[#6E9CBD] rounded-[4px] flex items-end justify-center pb-1"
+                    style={{
+                      height: `${(category.ourScore / 100) * 128}px`,
+                      bottom: "0px",
+                      transition: "height 0.4s cubic-bezier(0.4,0,0.2,1)", // 애니메이션 추가
+                    }}
+                  >
+                    <span className="text-sm font-semibold text-[#F7F8F8]">
+                      {category.ourScore}
+                    </span>
+                  </div>
+                </div>
+                {/* 경쟁사 점수 */}
+                <div className="relative w-7 h-[140px]">
+                  <div className="absolute w-7 h-[140px] bg-white/6 rounded-[4px]" />
+                  {competitor && (
+                    <div
+                      className="absolute w-7 bg-white/10 rounded-[4px] flex items-end justify-center pb-1"
+                      style={{
+                        height: `${(competitor.competitorScore / 100) * 128}px`,
+                        bottom: "0px",
+                        transition: "height 0.4s cubic-bezier(0.4,0,0.2,1)", // 애니메이션 추가
+                      }}
+                    >
+                      <span className="text-sm font-semibold text-[#8A8F98]">
+                        {competitor.competitorScore}
+                      </span>
+                    </div>
+                  )}
                 </div>
               </div>
-              <div className="relative w-7 h-[140px]">
-                <div className="absolute w-7 h-[140px] bg-white/6 rounded-[4px]" />
-                <div
-                  className="absolute w-7 bg-white/10 rounded-[4px] flex items-end justify-center pb-1"
-                  style={{
-                    height: `${(category.competitorScore / 100) * 128}px`,
-                    bottom: "0px",
-                  }}
-                >
-                  <span className="text-sm font-semibold text-[#8A8F98]">
-                    {category.competitorScore}
-                  </span>
-                </div>
-              </div>
+              <span className="text-[13px] font-medium text-[#D0D6E0] text-center">
+                {category.name}
+              </span>
             </div>
-            <span className="text-[13px] font-medium text-[#D0D6E0] text-center">
-              {category.name}
-            </span>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );

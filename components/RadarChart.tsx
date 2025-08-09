@@ -1,6 +1,16 @@
-import { Info } from "lucide-react"
+import { Info } from "lucide-react";
 
-export default function RadarChart() {
+interface RadarChartProps {
+  ourData: any[];
+  competitorData: { name: string; competitorScore: number }[]; // 추가
+}
+
+export default function RadarChart({
+  ourData,
+  competitorData,
+}: RadarChartProps) {
+  // ourData와 competitorData를 모두 사용해서 그래프를 그림
+  // 예시: 두 데이터 세트를 비교해서 시각화
   return (
     <div className="flex flex-col items-start p-6 gap-4 bg-white/4 border border-white/10 backdrop-blur-[4px] rounded-xl flex-1">
       <div className="flex items-center gap-1">
@@ -9,7 +19,12 @@ export default function RadarChart() {
       </div>
 
       <div className="flex flex-col justify-center items-center gap-2 w-full h-[254px]">
-        <svg width="276" height="240" viewBox="0 0 276 240" className="w-full h-full">
+        <svg
+          width="276"
+          height="240"
+          viewBox="0 0 276 240"
+          className="w-full h-full"
+        >
           {/* Grid lines */}
           <g stroke="#3E3E44" strokeWidth="1" fill="none">
             <polygon points="138,30 200,70 200,170 138,210 76,170 76,70" />
@@ -35,7 +50,14 @@ export default function RadarChart() {
           />
 
           {/* Data points */}
-          <circle cx="192" cy="78" r="2" fill="#ABF8AD" stroke="#F7F8F8" strokeWidth="1" />
+          <circle
+            cx="192"
+            cy="78"
+            r="2"
+            fill="#ABF8AD"
+            stroke="#F7F8F8"
+            strokeWidth="1"
+          />
           <circle cx="186" cy="135" r="2" fill="#ABF8AD" />
           <circle cx="160" cy="177" r="2" fill="#ABF8AD" />
           <circle cx="97" cy="194" r="2" fill="#ABF8AD" />
@@ -48,7 +70,14 @@ export default function RadarChart() {
           <circle cx="103" cy="181" r="2" fill="#16BFD6" />
           <circle cx="213" cy="141" r="2" fill="#16BFD6" />
           <circle cx="150" cy="157" r="2" fill="#16BFD6" />
-          <circle cx="198" cy="74" r="2" fill="#16BFD6" stroke="#F7F8F8" strokeWidth="1" />
+          <circle
+            cx="198"
+            cy="74"
+            r="2"
+            fill="#16BFD6"
+            stroke="#F7F8F8"
+            strokeWidth="1"
+          />
           <circle cx="134" cy="44" r="2" fill="#16BFD6" />
 
           {/* Labels */}
@@ -58,10 +87,22 @@ export default function RadarChart() {
           <text x="224" y="55" fontSize="12" fill="#D0D6E0" textAnchor="middle">
             이미지
           </text>
-          <text x="245" y="142" fontSize="12" fill="#D0D6E0" textAnchor="middle">
+          <text
+            x="245"
+            y="142"
+            fontSize="12"
+            fill="#D0D6E0"
+            textAnchor="middle"
+          >
             트렌드
           </text>
-          <text x="178" y="218" fontSize="12" fill="#D0D6E0" textAnchor="middle">
+          <text
+            x="178"
+            y="218"
+            fontSize="12"
+            fill="#D0D6E0"
+            textAnchor="middle"
+          >
             만족도
           </text>
           <text x="62" y="218" fontSize="12" fill="#D0D6E0" textAnchor="middle">
@@ -76,5 +117,5 @@ export default function RadarChart() {
         </svg>
       </div>
     </div>
-  )
+  );
 }

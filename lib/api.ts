@@ -207,6 +207,25 @@ const DUMMY_ANALYSIS_RESULT_SCORES: AnalysisResultScores[] = [
   { categoryNo: "12", categoryName: "고객경험", companyScore: 85 },
 ];
 
+// 경쟁사별 카테고리 점수 더미
+const DUMMY_COMPETITOR_SCORES: Record<string, AnalysisResultScores[]> = {
+  "102": [
+    { categoryNo: "10", categoryName: "브랜딩", companyScore: 85 },
+    { categoryNo: "11", categoryName: "마케팅", companyScore: 82 },
+    { categoryNo: "12", categoryName: "고객경험", companyScore: 79 },
+  ],
+  "103": [
+    { categoryNo: "10", categoryName: "브랜딩", companyScore: 88 },
+    { categoryNo: "11", categoryName: "마케팅", companyScore: 86 },
+    { categoryNo: "12", categoryName: "고객경험", companyScore: 83 },
+  ],
+  "104": [
+    { categoryNo: "10", categoryName: "브랜딩", companyScore: 82 },
+    { categoryNo: "11", categoryName: "마케팅", companyScore: 80 },
+    { categoryNo: "12", categoryName: "고객경험", companyScore: 77 },
+  ],
+};
+
 /* ------------------ API 클라이언트 ------------------ */
 
 class ApiClient {
@@ -265,6 +284,12 @@ class ApiClient {
         return DUMMY_DETAIL as unknown as T;
       }
       if (endpoint.includes("/analysis-result-scores")) {
+        // 경쟁사 번호가 있으면 경쟁사 점수 반환
+        const companyNoMatch = endpoint.match(/companyNo=(\d+)/);
+        if (companyNoMatch && DUMMY_COMPETITOR_SCORES[companyNoMatch[1]]) {
+          return DUMMY_COMPETITOR_SCORES[companyNoMatch[1]] as unknown as T;
+        }
+        // 기본값(자사)
         return DUMMY_ANALYSIS_RESULT_SCORES as unknown as T;
       }
       if (endpoint === "/companies" && options?.method === "POST") {
@@ -368,9 +393,18 @@ class ApiClient {
     analysisResultNo: string,
     companyNo: string
   ): Promise<AnalysisResultScores[]> {
-    return this.request<AnalysisResultScores[]>(
-      `/analysis-results/${analysisResultNo}/analysis-result-scores?companyNo=${companyNo}`
-    );
+    try {
+      return await this.request<AnalysisResultScores[]>(
+        `/analysis-results/${analysisResultNo}/analysis-result-scores?companyNo=${companyNo}`
+      );
+    } catch (error) {
+      // 더미데이터: 선택된 경쟁사 번호에 따라 반환
+      if (DUMMY_COMPETITOR_SCORES[companyNo]) {
+        return DUMMY_COMPETITOR_SCORES[companyNo];
+      }
+      // 기본값(자사)
+      return DUMMY_ANALYSIS_RESULT_SCORES;
+    }
   }
 
   // 분석 결과 상세 조회

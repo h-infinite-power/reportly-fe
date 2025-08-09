@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useState } from "react";
+import { Suspense, useState, useEffect } from "react";
 import { ChevronLeft, ChevronDown } from "lucide-react";
 import { useRouter } from "next/navigation";
 import Header from "@/components/Header";
@@ -14,6 +14,8 @@ import { LoadingSpinner } from "@/components/LoadingSpinner";
 import { ErrorDisplay } from "@/components/ErrorDisplay";
 import Footer from "@/components/Footer";
 import { useResultData } from "@/hooks/use-result-data";
+import { apiClient } from "@/lib/api"; // API 클라이언트 import 필요
+import { AnalysisResultScores } from "@/types"; // 타입 import 필요
 
 function ResultsPage() {
   const router = useRouter();
@@ -34,6 +36,26 @@ function ResultsPage() {
     getPromptData,
   } = useResultData();
 
+  const [competitorScores, setCompetitorScores] = useState<
+    AnalysisResultScores[]
+  >([]);
+
+  useEffect(() => {
+    async function fetchCompetitorScores() {
+      if (!selectedCompetitor) {
+        setCompetitorScores([]);
+        return;
+      }
+      // 선택된 경쟁사 카테고리별 점수 조회
+      const scores = await apiClient.getAnalysisResultScores(
+        analysisId,
+        selectedCompetitor
+      );
+      setCompetitorScores(scores);
+    }
+    fetchCompetitorScores();
+  }, [selectedCompetitor, analysisId]);
+
   const togglePrompt = (index: number) => {
     setExpandedPrompts((prev) =>
       prev.includes(index) ? prev.filter((i) => i !== index) : [...prev, index]
@@ -51,6 +73,19 @@ function ResultsPage() {
 
   // 경쟁사 목록 (detail에 데이터가 없다면 빈 배열로 초기화)
   const companies = detail?.competitorCompanyInfoList || [];
+
+  // 경쟁사 첫 번째 값으로 default 설정
+  useEffect(() => {
+    if (companies.length > 0 && !selectedCompetitor) {
+      setSelectedCompetitor(companies[0].companyNo);
+    }
+  }, [companies, selectedCompetitor]);
+
+  // 경쟁사 차트 데이터 생성
+  const competitorChartData = competitorScores.map((score) => ({
+    name: score.categoryName,
+    competitorScore: score.companyScore,
+  }));
 
   if (loading) {
     return (
@@ -258,8 +293,13 @@ function ResultsPage() {
                 companies={companies}
                 selectedCompetitor={selectedCompetitor}
                 onCompetitorChange={handleCompetitorChange}
+                competitorData={competitorChartData}
+                analysisId={analysisId} // ← 이 부분 추가
               />
-              <RadarChart />
+              <RadarChart
+                ourData={categoryData}
+                competitorData={competitorChartData} // 추가
+              />
             </div>
 
             {/* Prompt Analysis */}
@@ -298,7 +338,6 @@ function ResultsPage() {
     </div>
   );
 }
-
 export default function ResultsPageWrapper() {
   return (
     <Suspense fallback={<div>로딩 중...</div>}>
