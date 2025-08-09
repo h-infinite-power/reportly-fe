@@ -20,30 +20,30 @@ export default function Home() {
 
       <div className="relative z-10 flex flex-col items-center min-h-screen">
         {/* Header */}
-        <header className="w-full flex justify-between items-center px-8 py-4 h-[72px] bg-black/8 backdrop-blur-[10px]">
-          <h1 className="text-[26px] font-bold leading-[110%] tracking-[-0.025em] text-[#F7F8F8]">
+        <header className="w-full flex justify-between items-center px-4 sm:px-8 py-4 h-[64px] sm:h-[72px] bg-black/8 backdrop-blur-[10px]">
+          <h1 className="text-[22px] sm:text-[26px] font-bold leading-[110%] tracking-[-0.025em] text-[#F7F8F8]">
             Reportly
           </h1>
-          <div className="w-[112px] h-10 bg-gradient-to-r from-[#4989DD] to-[#4E49DD] rounded-lg hidden" />
+          <div className="w-[88px] sm:w-[112px] h-9 sm:h-10 bg-gradient-to-r from-[#4989DD] to-[#4E49DD] rounded-lg hidden sm:block" />
         </header>
 
         {/* Main Content */}
-        <main className="flex flex-col items-center gap-40 flex-1 w-full max-w-[1920px] pt-20">
-          <div className="flex flex-col items-center gap-14 w-full">
+        <main className="flex flex-col items-center gap-20 sm:gap-40 flex-1 w-full max-w-[1920px] pt-12 sm:pt-20">
+          <div className="flex flex-col items-center gap-8 sm:gap-14 w-full">
             {/* Hero Section */}
-            <div className="flex flex-col items-center gap-8 w-[376px]">
+            <div className="flex flex-col items-center gap-6 sm:gap-8 w-full max-w-[90%] sm:w-[376px]">
               {/* Badge */}
-              <div className="flex items-center gap-2 px-4 py-[9px] bg-white/6 border border-white/10 backdrop-blur-[4px] rounded-3xl">
+              <div className="flex items-center gap-2 px-3 sm:px-4 py-2 sm:py-[9px] bg-white/6 border border-white/10 backdrop-blur-[4px] rounded-3xl">
                 <div className="w-2 h-2 bg-[#8BBDFF] rounded-full" />
-                <span className="text-sm font-semibold leading-[140%] tracking-[-0.025em] text-[#D0D6E0]">
+                <span className="text-xs sm:text-sm font-semibold leading-[140%] tracking-[-0.025em] text-[#D0D6E0]">
                   AI가 보는 당신의 브랜드
                 </span>
               </div>
 
               {/* Title and Description */}
-              <div className="flex flex-col items-center gap-5 w-full">
+              <div className="flex flex-col items-center gap-3 sm:gap-5 w-full">
                 <h2
-                  className="text-[38px] font-bold leading-[115%] text-center tracking-[-0.025em] w-full"
+                  className="text-[28px] sm:text-[38px] font-bold leading-[115%] text-center tracking-[-0.025em] w-full"
                   style={{
                     background:
                       "linear-gradient(180deg, #FFFFFF 0%, #9CA3AF 100%)",
@@ -55,7 +55,7 @@ export default function Home() {
                   <p>LLM이 진단하는</p>
                   <p>우리 브랜드의 진짜 경쟁력</p>
                 </h2>
-                <p className="text-base leading-[150%] text-center tracking-[-0.025em] text-[#D0D6E0] w-[322px]">
+                <p className="text-sm sm:text-base leading-[150%] text-center tracking-[-0.025em] text-[#D0D6E0] max-w-[90%] sm:w-[322px]">
                   GPT-4가 인식하는 자사 브랜드의 이미지를 분석하고, 경쟁사와의
                   포지셔닝을 한눈에 파악하세요.
                 </p>
