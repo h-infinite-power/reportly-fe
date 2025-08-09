@@ -1,16 +1,108 @@
+"use client";
+
 import { Info } from "lucide-react";
 
 interface RadarChartProps {
-  ourData: any[];
-  competitorData: { name: string; competitorScore: number }[]; // 추가
+  ourData: { name: string; ourScore: number }[];
+  competitorData: { name: string; competitorScore: number }[];
 }
 
 export default function RadarChart({
   ourData,
   competitorData,
 }: RadarChartProps) {
-  // ourData와 competitorData를 모두 사용해서 그래프를 그림
-  // 예시: 두 데이터 세트를 비교해서 시각화
+  const categories = [
+    "브랜딩",
+    "마케팅",
+    "고객경험",
+    "혁신성",
+    "가격경쟁력",
+    "신뢰도",
+    "서비스품질",
+  ];
+
+  const center = { x: 138, y: 120 };
+  const maxRadius = 90; // 가장 큰 그리드 반지름
+  const levels = 5; // 그리드 단계 수
+
+  function getPoint(score: number, idx: number, radiusScale = 1) {
+    const angle = ((2 * Math.PI) / categories.length) * idx - Math.PI / 2;
+    const r = radiusScale * maxRadius * (score / 100);
+    return {
+      x: center.x + r * Math.cos(angle),
+      y: center.y + r * Math.sin(angle),
+    };
+  }
+
+  // 그리드 레벨별 폴리곤 생성
+  const gridPolygons = Array.from({ length: levels }, (_, level) => {
+    const r = ((levels - level) / levels) * maxRadius;
+    const points = categories
+      .map((_, i) => {
+        const angle = ((2 * Math.PI) / categories.length) * i - Math.PI / 2;
+        return `${center.x + r * Math.cos(angle)},${
+          center.y + r * Math.sin(angle)
+        }`;
+      })
+      .join(" ");
+    return (
+      <polygon
+        key={level}
+        points={points}
+        fill="none"
+        stroke="#3E3E44"
+        strokeWidth="1"
+      />
+    );
+  });
+
+  // 축 라인
+  const axes = categories.map((_, i) => {
+    const angle = ((2 * Math.PI) / categories.length) * i - Math.PI / 2;
+    return (
+      <line
+        key={`axis-${i}`}
+        x1={center.x}
+        y1={center.y}
+        x2={center.x + maxRadius * Math.cos(angle)}
+        y2={center.y + maxRadius * Math.sin(angle)}
+        stroke="#3E3E44"
+        strokeWidth="1"
+      />
+    );
+  });
+
+  // 데이터 좌표
+  const ourPoints = categories.map((cat, i) => {
+    const found = ourData.find((d) => d.name === cat);
+    return getPoint(found ? found.ourScore : 0, i, 1);
+  });
+  const competitorPoints = categories.map((cat, i) => {
+    const found = competitorData.find((d) => d.name === cat);
+    return getPoint(found ? found.competitorScore : 0, i, 1);
+  });
+
+  const toPointsString = (points: { x: number; y: number }[]) =>
+    points.map((p) => `${p.x},${p.y}`).join(" ");
+
+  // 라벨 위치
+  const labels = categories.map((cat, i) => {
+    const labelPos = getPoint(130, i, 1); // 바깥쪽
+    return (
+      <text
+        key={cat}
+        x={labelPos.x}
+        y={labelPos.y}
+        fontSize="12"
+        fill="#D0D6E0"
+        textAnchor="middle"
+        alignmentBaseline="middle"
+      >
+        {cat}
+      </text>
+    );
+  });
+
   return (
     <div className="flex flex-col items-start p-6 gap-4 bg-white/4 border border-white/10 backdrop-blur-[4px] rounded-xl flex-1">
       <div className="flex items-center gap-1">
@@ -18,102 +110,60 @@ export default function RadarChart({
         <Info className="w-4 h-4 text-white/10" />
       </div>
 
-      <div className="flex flex-col justify-center items-center gap-2 w-full h-[254px]">
+      <div className="flex justify-center items-center w-[276px] h-[254px]">
         <svg
           width="276"
           height="240"
           viewBox="0 0 276 240"
           className="w-full h-full"
         >
-          {/* Grid lines */}
-          <g stroke="#3E3E44" strokeWidth="1" fill="none">
-            <polygon points="138,30 200,70 200,170 138,210 76,170 76,70" />
-            <polygon points="138,50 180,80 180,160 138,190 96,160 96,80" />
-            <polygon points="138,70 160,90 160,150 138,170 116,150 116,90" />
-            <polygon points="138,90 140,100 140,140 138,150 136,140 136,100" />
-          </g>
+          {gridPolygons}
+          {axes}
 
-          {/* Data areas */}
+          {/* 우리 데이터 */}
           <polygon
-            points="138,45 185,75 175,155 125,185 95,145 115,85"
+            points={toPointsString(ourPoints)}
             fill="rgba(171, 248, 173, 0.5)"
             stroke="#39A13C"
             strokeWidth="2"
             opacity="0.6"
           />
+          {/* 경쟁사 데이터 */}
           <polygon
-            points="138,55 175,85 165,145 135,175 105,135 125,95"
+            points={toPointsString(competitorPoints)}
             fill="rgba(150, 183, 255, 0.5)"
             stroke="#4E49DD"
             strokeWidth="2"
             opacity="0.6"
           />
 
-          {/* Data points */}
-          <circle
-            cx="192"
-            cy="78"
-            r="2"
-            fill="#ABF8AD"
-            stroke="#F7F8F8"
-            strokeWidth="1"
-          />
-          <circle cx="186" cy="135" r="2" fill="#ABF8AD" />
-          <circle cx="160" cy="177" r="2" fill="#ABF8AD" />
-          <circle cx="97" cy="194" r="2" fill="#ABF8AD" />
-          <circle cx="52" cy="141" r="2" fill="#ABF8AD" />
-          <circle cx="78" cy="81" r="2" fill="#ABF8AD" />
-          <circle cx="133" cy="63" r="2" fill="#ABF8AD" />
+          {/* 우리 점 */}
+          {ourPoints.map((p, i) => (
+            <circle
+              key={`our-${i}`}
+              cx={p.x}
+              cy={p.y}
+              r="3"
+              fill="#ABF8AD"
+              stroke="#F7F8F8"
+              strokeWidth="1"
+            />
+          ))}
 
-          <circle cx="67" cy="74" r="2" fill="#16BFD6" />
-          <circle cx="71" cy="136" r="2" fill="#16BFD6" />
-          <circle cx="103" cy="181" r="2" fill="#16BFD6" />
-          <circle cx="213" cy="141" r="2" fill="#16BFD6" />
-          <circle cx="150" cy="157" r="2" fill="#16BFD6" />
-          <circle
-            cx="198"
-            cy="74"
-            r="2"
-            fill="#16BFD6"
-            stroke="#F7F8F8"
-            strokeWidth="1"
-          />
-          <circle cx="134" cy="44" r="2" fill="#16BFD6" />
+          {/* 경쟁사 점 */}
+          {competitorPoints.map((p, i) => (
+            <circle
+              key={`comp-${i}`}
+              cx={p.x}
+              cy={p.y}
+              r="3"
+              fill="#16BFD6"
+              stroke="#F7F8F8"
+              strokeWidth="1"
+            />
+          ))}
 
-          {/* Labels */}
-          <text x="122" y="15" fontSize="12" fill="#D0D6E0" textAnchor="middle">
-            인지도
-          </text>
-          <text x="224" y="55" fontSize="12" fill="#D0D6E0" textAnchor="middle">
-            이미지
-          </text>
-          <text
-            x="245"
-            y="142"
-            fontSize="12"
-            fill="#D0D6E0"
-            textAnchor="middle"
-          >
-            트렌드
-          </text>
-          <text
-            x="178"
-            y="218"
-            fontSize="12"
-            fill="#D0D6E0"
-            textAnchor="middle"
-          >
-            만족도
-          </text>
-          <text x="62" y="218" fontSize="12" fill="#D0D6E0" textAnchor="middle">
-            가성비
-          </text>
-          <text x="31" y="142" fontSize="12" fill="#D0D6E0" textAnchor="middle">
-            신뢰도
-          </text>
-          <text x="17" y="55" fontSize="12" fill="#D0D6E0" textAnchor="middle">
-            차별점
-          </text>
+          {labels}
         </svg>
       </div>
     </div>

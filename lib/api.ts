@@ -208,21 +208,119 @@ const DUMMY_ANALYSIS_RESULT_SCORES: AnalysisResultScores[] = [
 ];
 
 // 경쟁사별 카테고리 점수 더미
+const getRandomScore = () => Math.floor(50 + Math.random() * 50);
+
 const DUMMY_COMPETITOR_SCORES: Record<string, AnalysisResultScores[]> = {
   "102": [
-    { categoryNo: "10", categoryName: "브랜딩", companyScore: 85 },
-    { categoryNo: "11", categoryName: "마케팅", companyScore: 82 },
-    { categoryNo: "12", categoryName: "고객경험", companyScore: 79 },
+    {
+      categoryNo: "10",
+      categoryName: "브랜딩",
+      companyScore: getRandomScore(),
+    },
+    {
+      categoryNo: "11",
+      categoryName: "마케팅",
+      companyScore: getRandomScore(),
+    },
+    {
+      categoryNo: "12",
+      categoryName: "고객경험",
+      companyScore: getRandomScore(),
+    },
+    {
+      categoryNo: "13",
+      categoryName: "혁신성",
+      companyScore: getRandomScore(),
+    },
+    {
+      categoryNo: "14",
+      categoryName: "신뢰도",
+      companyScore: getRandomScore(),
+    },
+    {
+      categoryNo: "15",
+      categoryName: "가격경쟁력",
+      companyScore: getRandomScore(),
+    },
+    {
+      categoryNo: "16",
+      categoryName: "서비스품질",
+      companyScore: getRandomScore(),
+    },
   ],
   "103": [
-    { categoryNo: "10", categoryName: "브랜딩", companyScore: 88 },
-    { categoryNo: "11", categoryName: "마케팅", companyScore: 86 },
-    { categoryNo: "12", categoryName: "고객경험", companyScore: 83 },
+    {
+      categoryNo: "10",
+      categoryName: "브랜딩",
+      companyScore: getRandomScore(),
+    },
+    {
+      categoryNo: "11",
+      categoryName: "마케팅",
+      companyScore: getRandomScore(),
+    },
+    {
+      categoryNo: "12",
+      categoryName: "고객경험",
+      companyScore: getRandomScore(),
+    },
+    {
+      categoryNo: "13",
+      categoryName: "혁신성",
+      companyScore: getRandomScore(),
+    },
+    {
+      categoryNo: "14",
+      categoryName: "신뢰도",
+      companyScore: getRandomScore(),
+    },
+    {
+      categoryNo: "15",
+      categoryName: "가격경쟁력",
+      companyScore: getRandomScore(),
+    },
+    {
+      categoryNo: "16",
+      categoryName: "서비스품질",
+      companyScore: getRandomScore(),
+    },
   ],
   "104": [
-    { categoryNo: "10", categoryName: "브랜딩", companyScore: 82 },
-    { categoryNo: "11", categoryName: "마케팅", companyScore: 80 },
-    { categoryNo: "12", categoryName: "고객경험", companyScore: 77 },
+    {
+      categoryNo: "10",
+      categoryName: "브랜딩",
+      companyScore: getRandomScore(),
+    },
+    {
+      categoryNo: "11",
+      categoryName: "마케팅",
+      companyScore: getRandomScore(),
+    },
+    {
+      categoryNo: "12",
+      categoryName: "고객경험",
+      companyScore: getRandomScore(),
+    },
+    {
+      categoryNo: "13",
+      categoryName: "혁신성",
+      companyScore: getRandomScore(),
+    },
+    {
+      categoryNo: "14",
+      categoryName: "신뢰도",
+      companyScore: getRandomScore(),
+    },
+    {
+      categoryNo: "15",
+      categoryName: "가격경쟁력",
+      companyScore: getRandomScore(),
+    },
+    {
+      categoryNo: "16",
+      categoryName: "서비스품질",
+      companyScore: getRandomScore(),
+    },
   ],
 };
 
