@@ -1,7 +1,6 @@
 "use client";
 
-import { Suspense } from "react";
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { ChevronLeft, ChevronDown } from "lucide-react";
 import { useRouter } from "next/navigation";
 import Header from "@/components/Header";
@@ -19,6 +18,7 @@ import { useResultData } from "@/hooks/use-result-data";
 function ResultsPage() {
   const router = useRouter();
   const [expandedPrompts, setExpandedPrompts] = useState<number[]>([0]);
+  const [selectedCompetitor, setSelectedCompetitor] = useState<string>("");
 
   const {
     analysisId,
@@ -44,7 +44,14 @@ function ResultsPage() {
     router.push("/");
   };
 
-  // 로딩 상태
+  const handleCompetitorChange = (value: string) => {
+    setSelectedCompetitor(value);
+    // 필요하면 경쟁사 선택시 추가 로직 작성 가능
+  };
+
+  // 경쟁사 목록 (detail에 데이터가 없다면 빈 배열로 초기화)
+  const companies = detail?.competitorCompanyInfoList || [];
+
   if (loading) {
     return (
       <div className="min-h-screen w-full bg-[#08090A] relative overflow-hidden">
@@ -66,7 +73,6 @@ function ResultsPage() {
     );
   }
 
-  // 에러 상태
   if (error) {
     return (
       <div className="min-h-screen w-full bg-[#08090A] relative overflow-hidden">
@@ -91,7 +97,6 @@ function ResultsPage() {
     );
   }
 
-  // 데이터가 없는 경우
   if (!totalScoreData || !statistics || !detail) {
     return (
       <div className="min-h-screen w-full bg-[#08090A] relative overflow-hidden">
@@ -248,7 +253,12 @@ function ResultsPage() {
 
             {/* Charts Section */}
             <div className="flex gap-3 w-full">
-              <CategoryChart data={categoryData} />
+              <CategoryChart
+                data={categoryData}
+                companies={companies}
+                selectedCompetitor={selectedCompetitor}
+                onCompetitorChange={handleCompetitorChange}
+              />
               <RadarChart />
             </div>
 

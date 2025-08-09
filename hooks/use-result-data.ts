@@ -11,8 +11,9 @@ import { apiClient } from "@/lib/api";
 
 export function useResultData() {
   const searchParams = useSearchParams();
-  const jobNo = searchParams.get("jobNo");
-  const analysisId = searchParams.get("analysisId"); // analysisResultNo
+  // 더미데이터 기본값 지정
+  const jobNo = searchParams.get("jobNo") || "1001";
+  const analysisId = searchParams.get("analysisId") || "1001";
 
   const [totalScoreData, setTotalScoreData] = useState<TotalScoreData | null>(
     null
@@ -24,15 +25,9 @@ export function useResultData() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // 데이터 로딩
   useEffect(() => {
     const loadData = async () => {
-      if (!jobNo || !analysisId) {
-        setError("jobNo 또는 분석 ID가 없습니다.");
-        setLoading(false);
-        return;
-      }
-
+      // 더미값이 들어가므로 에러 처리 불필요
       try {
         setLoading(true);
         setError(null);

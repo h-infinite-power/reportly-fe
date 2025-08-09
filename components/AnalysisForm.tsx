@@ -2,8 +2,12 @@
 
 import { ChevronDown } from "lucide-react";
 import { useAnalysisForm } from "@/hooks/use-analysis-form";
+import { useSearchParams } from "next/navigation";
 
 export function AnalysisForm() {
+  const searchParams = useSearchParams();
+  const jobNo = searchParams.get("jobNo") ?? "";
+
   const {
     companies,
     industries,
@@ -22,7 +26,7 @@ export function AnalysisForm() {
     setNewIndustryName,
     handleAddCompany,
     handleAddIndustry,
-  } = useAnalysisForm();
+  } = useAnalysisForm(jobNo);
 
   return (
     <div className="flex flex-col gap-8 w-[480px]">

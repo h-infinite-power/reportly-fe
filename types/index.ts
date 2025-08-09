@@ -118,4 +118,5 @@ export interface AnalysisResultDetail {
   weakPoint: string;
   improvements: string;
   qaList: QAData[];
+  competitorCompanyInfoList: CompanyInfo[];
 }

@@ -162,6 +162,26 @@ const DUMMY_DETAIL: AnalysisResultDetail = {
       ],
     },
   ],
+  competitorCompanyInfoList: [
+    {
+      companyNo: "102",
+      companyName: "이디야커피",
+      summary: "합리적인 가격과 다양한 메뉴로 대중적 접근성을 확보",
+      companyCategoryScore: 85,
+    },
+    {
+      companyNo: "103",
+      companyName: "투썸플레이스",
+      summary: "창의적인 메뉴 개발과 브랜드 차별화에 집중",
+      companyCategoryScore: 88,
+    },
+    {
+      companyNo: "104",
+      companyName: "할리스커피",
+      summary: "전통적인 커피 문화와 현대적 감각의 조화",
+      companyCategoryScore: 82,
+    },
+  ],
 };
 
 // 분석 결과 회사 목록 더미
