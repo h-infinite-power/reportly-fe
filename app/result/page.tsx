@@ -42,7 +42,7 @@ function ResultsPage() {
 
   useEffect(() => {
     async function fetchCompetitorScores() {
-      if (!selectedCompetitor) {
+      if (!selectedCompetitor || !analysisId) {
         setCompetitorScores([]);
         return;
       }

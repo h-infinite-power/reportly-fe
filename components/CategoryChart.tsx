@@ -13,7 +13,7 @@ interface CategoryChartProps {
   selectedCompetitor: string;
   onCompetitorChange: (value: string) => void;
   competitorData: { name: string; competitorScore: number }[]; // 추가
-  analysisId: string; // analysisId 추가
+  analysisId?: string; // analysisId 추가 (옵션)
 }
 
 export default function CategoryChart({
@@ -28,7 +28,7 @@ export default function CategoryChart({
 
   useEffect(() => {
     async function fetchCompetitorScores() {
-      if (!selectedCompetitor) {
+      if (!selectedCompetitor || !analysisId) {
         setCompetitorScores([]);
         return;
       }

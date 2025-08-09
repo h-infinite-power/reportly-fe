@@ -13,9 +13,8 @@ import { apiClient } from "@/lib/api";
 
 export function useResultData() {
   const searchParams = useSearchParams();
-  // 더미데이터 기본값 지정
-  const jobNo = searchParams.get("jobNo") || "1001";
-  const analysisId = searchParams.get("analysisId") || "1001";
+  const jobNo = searchParams.get("jobNo");
+  const analysisId = searchParams.get("analysisId");
 
   const [totalScoreData, setTotalScoreData] = useState<TotalScoreData | null>(
     null
@@ -29,10 +28,13 @@ export function useResultData() {
 
   useEffect(() => {
     const loadData = async () => {
-      // 더미값이 들어가므로 에러 처리 불필요
       try {
         setLoading(true);
         setError(null);
+
+        if (!jobNo || !analysisId) {
+          throw new Error("필수 파라미터가 없습니다.");
+        }
 
         const [totalScore, statisticsData, detailData] = await Promise.all([
           apiClient.getTotalScoreList(jobNo),
