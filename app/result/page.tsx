@@ -246,7 +246,7 @@ function ResultsPage() {
                 onClick={handleBackClick}
                 className="flex items-center p-2 hover:bg-white/5 rounded-lg transition-colors"
               >
-                <ChevronLeft className="w-4 h-4 text-[#F7F8F8]" />
+                <ChevronLeft className="w-6 h-6 text-[#F7F8F8]" />
               </button>
 
               <div
