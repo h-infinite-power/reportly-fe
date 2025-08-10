@@ -72,10 +72,14 @@ export default function CategoryChart({
             onChange={(e) => onCompetitorChange(e.target.value)}
             className="w-full h-[36px] px-3 bg-white/4 border border-white/10 backdrop-blur-[4px] rounded-md text-sm font-medium leading-[140%] tracking-[-0.025em] text-[#62666D] appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#4989DD] focus:border-transparent"
           >
-            <option value="">경쟁사 선택</option>
             {companies.map((company) => {
-              // analysisResultNo가 있는 경우에만 옵션 표시
-              if ("analysisResultNo" in company && company.analysisResultNo) {
+              // analysisResultNo가 있고 targetCompanyYn이 N인 경우에만 옵션 표시
+              if (
+                "analysisResultNo" in company &&
+                company.analysisResultNo &&
+                "targetCompanyYn" in company &&
+                company.targetCompanyYn === "N"
+              ) {
                 return (
                   <option
                     key={company.analysisResultNo}

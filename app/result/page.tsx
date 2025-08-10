@@ -276,7 +276,7 @@ function ResultsPage() {
                 <>
                   <MetricCard
                     title="종합 점수"
-                    value={`${totalScoreData.targetTotalScore}점`}
+                    value={`${Math.round(totalScoreData.targetTotalScore)}점`}
                     subtitle={`업계 평균 대비 ${industryComparison}`}
                     hasInfo
                   />
@@ -389,8 +389,18 @@ function ResultsPage() {
                   getCompetitorScores={getCompetitorScores}
                 />
                 <RadarChart
-                  ourData={categoryData}
-                  competitorData={categoryData} // 업계 평균 데이터를 경쟁사 데이터로도 사용
+                  ourData={
+                    statistics?.targetCompanyCategoryScoreList.map((cat) => ({
+                      name: cat.categoryName,
+                      ourScore: cat.categoryScore,
+                    })) || []
+                  }
+                  competitorData={
+                    statistics?.competitorCategoryAvgScoreList.map((cat) => ({
+                      name: cat.categoryName,
+                      competitorScore: cat.categoryScore,
+                    })) || []
+                  }
                 />
               </div>
             )}

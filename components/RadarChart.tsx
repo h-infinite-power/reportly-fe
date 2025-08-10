@@ -1,6 +1,7 @@
 "use client";
 
 import { Info } from "lucide-react";
+import { useState } from "react";
 
 interface RadarChartProps {
   ourData: { name: string; ourScore: number }[];
@@ -11,6 +12,22 @@ export default function RadarChart({
   ourData,
   competitorData,
 }: RadarChartProps) {
+  const [tooltip, setTooltip] = useState<{
+    visible: boolean;
+    x: number;
+    y: number;
+    category: string;
+    ourScore: number;
+    competitorScore: number;
+  }>({
+    visible: false,
+    x: 0,
+    y: 0,
+    category: "",
+    ourScore: 0,
+    competitorScore: 0,
+  });
+
   // 실제 데이터에서 카테고리 목록 생성
   const categories = Array.from(
     new Set([
@@ -108,11 +125,12 @@ export default function RadarChart({
     );
   });
 
-  // 데이터 좌표
+  // 데이터 좌표 - 카테고리별로 매칭하여 점수 계산
   const ourPoints = categories.map((cat, i) => {
     const found = ourData.find((d) => d.name === cat);
     return getPoint(found ? found.ourScore : 0, i, 1);
   });
+
   const competitorPoints = categories.map((cat, i) => {
     const found = competitorData.find((d) => d.name === cat);
     return getPoint(found ? found.competitorScore : 0, i, 1);
@@ -139,8 +157,67 @@ export default function RadarChart({
     );
   });
 
+  // 마우스 이벤트 핸들러
+  const handleMouseMove = (event: React.MouseEvent<SVGSVGElement>) => {
+    const rect = event.currentTarget.getBoundingClientRect();
+    const mouseX = event.clientX - rect.left;
+    const mouseY = event.clientY - rect.top;
+
+    // 각 카테고리 영역에서 마우스 위치 확인
+    for (let i = 0; i < categories.length; i++) {
+      const ourPoint = ourPoints[i];
+      const competitorPoint = competitorPoints[i];
+      const category = categories[i];
+
+      // 마우스가 점 근처에 있는지 확인 (20px 반지름으로 증가)
+      const distanceToOur = Math.sqrt(
+        Math.pow(mouseX - ourPoint.x, 2) + Math.pow(mouseY - ourPoint.y, 2)
+      );
+      const distanceToCompetitor = Math.sqrt(
+        Math.pow(mouseX - competitorPoint.x, 2) +
+          Math.pow(mouseY - competitorPoint.y, 2)
+      );
+
+      if (distanceToOur < 20 || distanceToCompetitor < 20) {
+        const ourScore =
+          ourData.find((d) => d.name === category)?.ourScore || 0;
+        const competitorScore =
+          competitorData.find((d) => d.name === category)?.competitorScore || 0;
+
+        // 기존 툴팁과 같은 카테고리면 위치만 업데이트
+        if (tooltip.visible && tooltip.category === category) {
+          setTooltip((prev) => ({
+            ...prev,
+            x: mouseX,
+            y: mouseY,
+          }));
+        } else {
+          // 새로운 카테고리거나 툴팁이 숨겨진 상태면 새로 생성
+          setTooltip({
+            visible: true,
+            x: mouseX,
+            y: mouseY,
+            category,
+            ourScore: Math.round(ourScore),
+            competitorScore: Math.round(competitorScore),
+          });
+        }
+        return;
+      }
+    }
+
+    // 마우스가 모든 점에서 멀어졌을 때만 툴팁 숨김
+    if (tooltip.visible) {
+      setTooltip((prev) => ({ ...prev, visible: false }));
+    }
+  };
+
+  const handleMouseLeave = () => {
+    setTooltip((prev) => ({ ...prev, visible: false }));
+  };
+
   return (
-    <div className="flex flex-col items-start p-6 gap-4 bg-white/4 border border-white/10 backdrop-blur-[4px] rounded-xl flex-1">
+    <div className="flex flex-col items-start p-6 gap-4 bg-white/4 border border-white/10 backdrop-blur-[4px] rounded-xl flex-1 relative">
       <div className="flex items-center gap-1">
         <h3 className="text-lg font-bold text-[#F7F8F8]">경쟁사 비교 그래프</h3>
         <Info className="w-4 h-4 text-white/10" />
@@ -152,11 +229,13 @@ export default function RadarChart({
           height="240"
           viewBox="0 0 276 240"
           className="w-full h-full"
+          onMouseMove={handleMouseMove}
+          onMouseLeave={handleMouseLeave}
         >
           {gridPolygons}
           {axes}
 
-          {/* 우리 데이터 */}
+          {/* 타겟 회사 데이터 (우리 회사) */}
           <polygon
             points={toPointsString(ourPoints)}
             fill="rgba(171, 248, 173, 0.5)"
@@ -164,7 +243,7 @@ export default function RadarChart({
             strokeWidth="2"
             opacity="0.6"
           />
-          {/* 경쟁사 데이터 */}
+          {/* 경쟁사 평균 데이터 */}
           <polygon
             points={toPointsString(competitorPoints)}
             fill="rgba(150, 183, 255, 0.5)"
@@ -173,7 +252,7 @@ export default function RadarChart({
             opacity="0.6"
           />
 
-          {/* 우리 점 */}
+          {/* 타겟 회사 점 */}
           {ourPoints.map((p, i) => (
             <circle
               key={`our-${i}`}
@@ -186,7 +265,7 @@ export default function RadarChart({
             />
           ))}
 
-          {/* 경쟁사 점 */}
+          {/* 경쟁사 평균 점 */}
           {competitorPoints.map((p, i) => (
             <circle
               key={`comp-${i}`}
@@ -202,6 +281,29 @@ export default function RadarChart({
           {labels}
         </svg>
       </div>
+
+      {/* 툴팁 */}
+      {tooltip.visible && (
+        <div
+          className="absolute z-10 flex flex-col items-start p-2 gap-1 bg-[rgba(35,35,38,0.8)] border border-[rgba(255,255,255,0.1)] shadow-[0px_0px_20px_rgba(0,0,0,0.32)] backdrop-blur-[4px] rounded-lg"
+          style={{
+            left: `${tooltip.x + 10}px`,
+            top: `${tooltip.y - 20}px`,
+          }}
+        >
+          <div className="text-[#F7F8F8] text-xs font-semibold leading-[140%] tracking-[-0.025em]">
+            {tooltip.category}
+          </div>
+          <div className="flex flex-col gap-1">
+            <div className="text-[#8BBDFF] text-xs font-medium leading-[140%] tracking-[-0.025em]">
+              우리 브랜드 : {tooltip.ourScore}
+            </div>
+            <div className="text-[#ABF8AD] text-xs font-medium leading-[140%] tracking-[-0.025em]">
+              경쟁사 평균 : {tooltip.competitorScore}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
