@@ -1,5 +1,6 @@
 import type { CategoryData } from "@/types";
 import { useEffect, useState, useCallback } from "react";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface Company {
   companyNo: string;
@@ -21,11 +22,12 @@ export default function CategoryChart({
   companies,
   selectedCompetitor,
   onCompetitorChange,
-  competitorData,
+  competitorData, // analysisId 추가
   analysisId, // analysisId 추가
   getCompetitorScores, // 경쟁사 점수 조회 함수 추가
 }: CategoryChartProps) {
   const [competitorScores, setCompetitorScores] = useState<any[]>([]);
+  const isMobile = useIsMobile();
 
   const fetchCompetitorScores = useCallback(async () => {
     if (!selectedCompetitor || !getCompetitorScores) {
@@ -59,9 +61,17 @@ export default function CategoryChart({
   };
 
   return (
-    <div className="flex flex-col items-start p-6 gap-4 bg-white/4 border border-white/10 backdrop-blur-[4px] rounded-xl flex-[2]">
+    <div
+      className={`flex flex-col items-start bg-white/4 border border-white/10 backdrop-blur-[4px] rounded-xl flex-[2] ${
+        isMobile ? "p-4 gap-3" : "p-6 gap-4"
+      }`}
+    >
       <div className="flex flex-col gap-3 w-full">
-        <h3 className="text-lg font-bold text-[#F7F8F8]">
+        <h3
+          className={`font-bold text-[#F7F8F8] ${
+            isMobile ? "text-base" : "text-lg"
+          }`}
+        >
           카테고리별 점수 비교
         </h3>
 
@@ -94,7 +104,7 @@ export default function CategoryChart({
           </select>
 
           <svg
-            className="pointer-events-none absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-[#F7F8F8]"
+            className="pointer-events-none absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-[#F7F8F98]"
             fill="none"
             stroke="currentColor"
             strokeWidth="2"
@@ -109,51 +119,97 @@ export default function CategoryChart({
         </div>
       </div>
 
-      <div className="flex justify-between items-end w-full h-[197px]">
+      <div
+        className={`flex justify-between items-end w-full ${
+          isMobile ? "h-[150px]" : "h-[197px]"
+        }`}
+      >
         {data.map((category) => {
           const competitorScore = getCompetitorScoreForCategory(category.name);
           return (
             <div
               key={category.name}
-              className="flex flex-col justify-center items-center p-2 gap-2 w-20 h-full"
+              className={`flex flex-col justify-center items-center gap-2 ${
+                isMobile ? "p-1 w-12" : "p-2 w-20"
+              } h-full`}
             >
-              <div className="flex items-center gap-2 w-16 h-[140px]">
+              <div
+                className={`flex items-center gap-1 ${
+                  isMobile ? "h-[120px] w-10" : "h-[140px] w-16"
+                }`}
+              >
                 {/* 우리 회사 점수 */}
-                <div className="relative w-7 h-[140px]">
-                  <div className="absolute w-7 h-[140px] bg-white/6 rounded-[4px]" />
+                <div
+                  className={`relative ${
+                    isMobile ? "h-[120px] w-4" : "h-[140px] w-7"
+                  }`}
+                >
                   <div
-                    className="absolute w-7 bg-gradient-to-t from-[#4E49DD] to-[#6E9CBD] rounded-[4px] flex items-end justify-center pb-1"
+                    className={`absolute bg-white/6 rounded-[4px] ${
+                      isMobile ? "h-[120px] w-4" : "h-[140px] w-7"
+                    }`}
+                  />
+                  <div
+                    className={`absolute bg-gradient-to-t from-[#4E49DD] to-[#6E9CBD] rounded-[4px] flex items-end justify-center pb-1 ${
+                      isMobile ? "w-4" : "w-7"
+                    }`}
                     style={{
-                      height: `${(category.ourScore / 100) * 128}px`,
+                      height: `${
+                        (category.ourScore / 100) * (isMobile ? 100 : 128)
+                      }px`,
                       bottom: "0px",
                       transition: "height 0.4s cubic-bezier(0.4,0,0.2,1)", // 애니메이션 추가
                     }}
                   >
-                    <span className="text-sm font-semibold text-[#F7F8F8]">
+                    <span
+                      className={`font-semibold text-[#F7F8F8] ${
+                        isMobile ? "text-xs" : "text-sm"
+                      }`}
+                    >
                       {category.ourScore}
                     </span>
                   </div>
                 </div>
                 {/* 경쟁사 점수 */}
-                <div className="relative w-7 h-[140px]">
-                  <div className="absolute w-7 h-[140px] bg-white/6 rounded-[4px]" />
+                <div
+                  className={`relative ${
+                    isMobile ? "h-[120px] w-4" : "h-[140px] w-7"
+                  }`}
+                >
+                  <div
+                    className={`absolute bg-white/6 rounded-[4px] ${
+                      isMobile ? "h-[120px] w-4" : "h-[140px] w-7"
+                    }`}
+                  />
                   {competitorScore > 0 && (
                     <div
-                      className="absolute w-7 bg-white/10 rounded-[4px] flex items-end justify-center pb-1"
+                      className={`absolute bg-white/10 rounded-[4px] flex items-end justify-center pb-1 ${
+                        isMobile ? "w-4" : "w-7"
+                      }`}
                       style={{
-                        height: `${(competitorScore / 100) * 128}px`,
+                        height: `${
+                          (competitorScore / 100) * (isMobile ? 100 : 128)
+                        }px`,
                         bottom: "0px",
                         transition: "height 0.4s cubic-bezier(0.4,0,0.2,1)", // 애니메이션 추가
                       }}
                     >
-                      <span className="text-sm font-semibold text-[#8A8F98]">
+                      <span
+                        className={`font-semibold text-[#8A8F98] ${
+                          isMobile ? "text-xs" : "text-sm"
+                        }`}
+                      >
                         {competitorScore}
                       </span>
                     </div>
                   )}
                 </div>
               </div>
-              <span className="text-[13px] font-medium text-[#D0D6E0] text-center">
+              <span
+                className={`font-medium text-[#D0D6E0] text-center ${
+                  isMobile ? "text-[11px]" : "text-[13px]"
+                }`}
+              >
                 {category.name}
               </span>
             </div>

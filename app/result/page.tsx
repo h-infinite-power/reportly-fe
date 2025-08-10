@@ -14,6 +14,7 @@ import { LoadingSpinner } from "@/components/LoadingSpinner";
 import { ErrorDisplay } from "@/components/ErrorDisplay";
 import Footer from "@/components/Footer";
 import { useResultData } from "@/hooks/use-result-data";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { apiClient } from "@/lib/api"; // API 클라이언트 import 필요
 import { AnalysisResultScores } from "@/types"; // 타입 import 필요
 
@@ -22,6 +23,7 @@ function ResultsPage() {
   const searchParams = useSearchParams();
   const [expandedPrompts, setExpandedPrompts] = useState<number[]>([0]);
   const [selectedCompetitor, setSelectedCompetitor] = useState<string>("");
+  const isMobile = useIsMobile();
 
   // URL에서 브랜드명 제거 - 이제 API에서 가져온 첫 번째 기업 이름 사용
   // const brandName = searchParams.get("brandName") || "";
@@ -146,7 +148,7 @@ function ResultsPage() {
           style={{
             background: `
               radial-gradient(80% 50% at 50% -20%, rgba(120, 119, 198, 0.3) 0%, rgba(120, 119, 198, 0) 100%),
-              radial-gradient(60% 50% at 80% 20%, rgba(78, 73, 221, 0.15) 0%, rgba(78, 73, 221, 0) 100%),
+              radial-gradient(60% 50% at 80% 20%, rgba(78, 73, 221, 0.15) 0%, rgba(120, 119, 198, 0) 100%),
               #08090A
             `,
           }}
@@ -210,8 +212,16 @@ function ResultsPage() {
         <Header showDownloadButton />
 
         {/* Main Content */}
-        <main className="flex flex-col items-center gap-40 flex-1 w-full max-w-[960px] pt-14">
-          <div className="flex flex-col items-center gap-14 w-full">
+        <main
+          className={`flex flex-col items-center gap-40 flex-1 w-full max-w-[960px] pt-14 ${
+            isMobile ? "px-4 gap-20" : ""
+          }`}
+        >
+          <div
+            className={`flex flex-col items-center gap-14 w-full ${
+              isMobile ? "gap-8" : ""
+            }`}
+          >
             {/* Data Status Indicator */}
             {!hasAnyData && loading && (
               <div className="w-full p-6 bg-white/4 border border-white/10 backdrop-blur-[4px] rounded-xl text-center">
@@ -227,7 +237,11 @@ function ResultsPage() {
               </div>
             )}
             {/* Back Button & Header Info */}
-            <div className="flex flex-col items-start gap-5 w-full">
+            <div
+              className={`flex flex-col items-start gap-5 w-full ${
+                isMobile ? "gap-4" : ""
+              }`}
+            >
               <button
                 onClick={handleBackClick}
                 className="flex items-center p-2 hover:bg-white/5 rounded-lg transition-colors"
@@ -235,8 +249,16 @@ function ResultsPage() {
                 <ChevronLeft className="w-4 h-4 text-[#F7F8F8]" />
               </button>
 
-              <div className="flex flex-col items-start gap-4 w-full">
-                <div className="flex justify-between items-center w-full">
+              <div
+                className={`flex flex-col items-start gap-4 w-full ${
+                  isMobile ? "gap-3" : ""
+                }`}
+              >
+                <div
+                  className={`flex justify-between items-center w-full ${
+                    isMobile ? "flex-col items-start gap-3" : ""
+                  }`}
+                >
                   <div className="flex flex-col items-start gap-3">
                     <p className="text-sm text-[#8A8F98]">
                       {new Date().toLocaleDateString("ko-KR", {
@@ -246,8 +268,16 @@ function ResultsPage() {
                       })}{" "}
                       분석됨
                     </p>
-                    <div className="flex items-center gap-3">
-                      <h2 className="text-[32px] font-bold leading-[110%] tracking-[-0.025em] text-[#F7F8F8]">
+                    <div
+                      className={`flex items-center gap-3 ${
+                        isMobile ? "flex-wrap" : ""
+                      }`}
+                    >
+                      <h2
+                        className={`font-bold leading-[110%] tracking-[-0.025em] text-[#F7F8F8] ${
+                          isMobile ? "text-2xl" : "text-[32px]"
+                        }`}
+                      >
                         {getFirstCompanyName()}
                       </h2>
                       <span className="px-4 py-[6px] bg-[#8BBDFF]/8 border border-white/10 backdrop-blur-[4px] rounded-3xl text-sm font-semibold text-[#8BBDFF]">
@@ -271,7 +301,11 @@ function ResultsPage() {
             </div>
 
             {/* Key Metrics Cards */}
-            <div className="flex gap-3 w-full">
+            <div
+              className={`flex gap-3 w-full ${
+                isMobile ? "flex-col gap-4" : ""
+              }`}
+            >
               {totalScoreData && (
                 <>
                   <MetricCard
@@ -339,11 +373,19 @@ function ResultsPage() {
             </div>
 
             {/* AI Insights */}
-            <div className="flex flex-col justify-center items-start p-6 gap-6 w-full bg-white/4 border border-white/10 backdrop-blur-[4px] rounded-xl">
+            <div
+              className={`flex flex-col justify-center items-start p-6 gap-6 w-full bg-white/4 border border-white/10 backdrop-blur-[4px] rounded-xl ${
+                isMobile ? "p-4 gap-4" : ""
+              }`}
+            >
               <div className="flex justify-between items-center w-full">
                 <div className="flex items-center gap-[6px]">
                   <div className="w-5 h-5 bg-gradient-to-r from-[#B0ADFF] to-[#4E49DD] rounded-xl" />
-                  <span className="text-lg font-bold text-[#F7F8F8]">
+                  <span
+                    className={`font-bold text-[#F7F8F8] ${
+                      isMobile ? "text-base" : "text-lg"
+                    }`}
+                  >
                     AI 인사이트 요약
                   </span>
                 </div>
@@ -351,7 +393,11 @@ function ResultsPage() {
               </div>
 
               {detail && (
-                <div className="flex gap-6 w-full">
+                <div
+                  className={`flex gap-6 w-full ${
+                    isMobile ? "flex-col gap-4" : ""
+                  }`}
+                >
                   <InsightCard
                     type="strength"
                     title="강점"
@@ -373,7 +419,11 @@ function ResultsPage() {
 
             {/* Charts Section */}
             {categoryData.length > 0 && (
-              <div className="flex gap-3 w-full">
+              <div
+                className={`flex gap-3 w-full ${
+                  isMobile ? "flex-col gap-6" : ""
+                }`}
+              >
                 <CategoryChart
                   data={categoryData}
                   companies={companies}
@@ -407,8 +457,16 @@ function ResultsPage() {
 
             {/* Prompt Analysis */}
             {prompts.length > 0 && (
-              <div className="flex flex-col items-start p-6 gap-4 w-full bg-white/4 border border-white/10 backdrop-blur-[4px] rounded-xl">
-                <h3 className="text-lg font-bold text-[#F7F8F8]">
+              <div
+                className={`flex flex-col items-start p-6 gap-4 w-full bg-white/4 border border-white/10 backdrop-blur-[4px] rounded-xl ${
+                  isMobile ? "p-4 gap-3" : ""
+                }`}
+              >
+                <h3
+                  className={`font-bold text-[#F7F8F8] ${
+                    isMobile ? "text-base" : "text-lg"
+                  }`}
+                >
                   프롬프트 분석
                 </h3>
 

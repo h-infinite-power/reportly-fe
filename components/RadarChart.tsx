@@ -2,6 +2,7 @@
 
 import { Info } from "lucide-react";
 import { useState } from "react";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface RadarChartProps {
   ourData: { name: string; ourScore: number }[];
@@ -28,6 +29,8 @@ export default function RadarChart({
     competitorScore: 0,
   });
 
+  const isMobile = useIsMobile();
+
   // 실제 데이터에서 카테고리 목록 생성
   const categories = Array.from(
     new Set([
@@ -39,14 +42,28 @@ export default function RadarChart({
   // 데이터가 없으면 기본 카테고리 사용
   if (categories.length === 0) {
     return (
-      <div className="flex flex-col items-start p-6 gap-4 bg-white/4 border border-white/10 backdrop-blur-[4px] rounded-xl flex-1">
+      <div
+        className={`flex flex-col items-start bg-white/4 border border-white/10 backdrop-blur-[4px] rounded-xl flex-1 relative ${
+          isMobile ? "p-4 gap-3" : "p-6 gap-4"
+        }`}
+      >
         <div className="flex items-center gap-1">
-          <h3 className="text-lg font-bold text-[#F7F8F8]">
+          <h3
+            className={`font-bold text-[#F7F8F8] ${
+              isMobile ? "text-base" : "text-lg"
+            }`}
+          >
             경쟁사 비교 그래프
           </h3>
-          <Info className="w-4 h-4 text-white/10" />
+          <Info
+            className={`text-white/10 ${isMobile ? "w-3 h-3" : "w-4 h-4"}`}
+          />
         </div>
-        <div className="flex justify-center items-center w-[276px] h-[254px]">
+        <div
+          className={`flex justify-center items-center ${
+            isMobile ? "w-full h-[200px]" : "w-[276px] h-[254px]"
+          }`}
+        >
           <p className="text-[#8A8F98] text-sm">카테고리 데이터가 없습니다.</p>
         </div>
       </div>
@@ -60,14 +77,28 @@ export default function RadarChart({
 
   if (allScoresZero) {
     return (
-      <div className="flex flex-col items-start p-6 gap-4 bg-white/4 border border-white/10 backdrop-blur-[4px] rounded-xl flex-1">
+      <div
+        className={`flex flex-col items-start bg-white/4 border border-white/10 backdrop-blur-[4px] rounded-xl flex-1 relative ${
+          isMobile ? "p-4 gap-3" : "p-6 gap-4"
+        }`}
+      >
         <div className="flex items-center gap-1">
-          <h3 className="text-lg font-bold text-[#F7F8F8]">
+          <h3
+            className={`font-bold text-[#F7F8F8] ${
+              isMobile ? "text-base" : "text-lg"
+            }`}
+          >
             경쟁사 비교 그래프
           </h3>
-          <Info className="w-4 h-4 text-white/10" />
+          <Info
+            className={`text-white/10 ${isMobile ? "w-3 h-3" : "w-4 h-4"}`}
+          />
         </div>
-        <div className="flex justify-center items-center w-[276px] h-[254px]">
+        <div
+          className={`flex justify-center items-center ${
+            isMobile ? "w-full h-[200px]" : "w-[276px] h-[254px]"
+          }`}
+        >
           <p className="text-[#8A8F98] text-sm">점수 데이터가 없습니다.</p>
         </div>
       </div>
@@ -217,13 +248,27 @@ export default function RadarChart({
   };
 
   return (
-    <div className="flex flex-col items-start p-6 gap-4 bg-white/4 border border-white/10 backdrop-blur-[4px] rounded-xl flex-1 relative">
+    <div
+      className={`flex flex-col items-start bg-white/4 border border-white/10 backdrop-blur-[4px] rounded-xl flex-1 relative ${
+        isMobile ? "p-4 gap-3" : "p-6 gap-4"
+      }`}
+    >
       <div className="flex items-center gap-1">
-        <h3 className="text-lg font-bold text-[#F7F8F8]">경쟁사 비교 그래프</h3>
-        <Info className="w-4 h-4 text-white/10" />
+        <h3
+          className={`font-bold text-[#F7F8F8] ${
+            isMobile ? "text-base" : "text-lg"
+          }`}
+        >
+          경쟁사 비교 그래프
+        </h3>
+        <Info className={`text-white/10 ${isMobile ? "w-3 h-3" : "w-4 h-4"}`} />
       </div>
 
-      <div className="flex justify-center items-center w-[276px] h-[254px]">
+      <div
+        className={`flex justify-center items-center ${
+          isMobile ? "w-full h-[200px]" : "w-[276px] h-[254px]"
+        }`}
+      >
         <svg
           width="276"
           height="240"
