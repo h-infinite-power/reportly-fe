@@ -57,8 +57,8 @@ export function AnalysisForm() {
             </select>
             <ChevronDown className="absolute right-4 top-1/2 transform -translate-y-1/2 w-4 h-4 text-[#F7F8F8] pointer-events-none rotate-0" />
           </div>
-          {/* 브랜드명 입력 + 추가하기 */}
-          <div className="flex flex-wrap gap-2 mt-2">
+          {/* 브랜드명 입력 + 추가하기 - 주석처리됨 */}
+          {/* <div className="flex flex-wrap gap-2 mt-2">
             <input
               type="text"
               value={newCompanyName}
@@ -79,7 +79,7 @@ export function AnalysisForm() {
             >
               추가하기
             </button>
-          </div>
+          </div> */}
         </div>
 
         {/* Industry Selection */}
@@ -103,8 +103,8 @@ export function AnalysisForm() {
             </select>
             <ChevronDown className="absolute right-4 top-1/2 transform -translate-y-1/2 w-4 h-4 text-[#F7F8F8] pointer-events-none rotate-0" />
           </div>
-          {/* 업종명 입력 + 추가하기 */}
-          <div className="flex flex-wrap gap-2 mt-2">
+          {/* 업종명 입력 + 추가하기 - 주석처리됨 */}
+          {/* <div className="flex flex-wrap gap-2 mt-2">
             <input
               type="text"
               value={newIndustryName}
@@ -125,7 +125,7 @@ export function AnalysisForm() {
             >
               추가하기
             </button>
-          </div>
+          </div> */}
         </div>
 
         {/* Competitors Selection */}

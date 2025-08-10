@@ -24,7 +24,8 @@ export default function Home() {
           <h1 className="text-[22px] sm:text-[26px] font-bold leading-[110%] tracking-[-0.025em] text-[#F7F8F8]">
             Reportly
           </h1>
-          <div className="w-[88px] sm:w-[112px] h-9 sm:h-10 bg-gradient-to-r from-[#4989DD] to-[#4E49DD] rounded-lg hidden sm:block" />
+          {/* 우측 상단 파란 버튼 - 주석처리됨 */}
+          {/* <div className="w-[88px] sm:w-[112px] h-9 sm:h-10 bg-gradient-to-r from-[#4989DD] to-[#4E49DD] rounded-lg hidden sm:block" /> */}
         </header>
 
         {/* Main Content */}
