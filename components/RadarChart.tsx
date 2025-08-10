@@ -11,15 +11,51 @@ export default function RadarChart({
   ourData,
   competitorData,
 }: RadarChartProps) {
-  const categories = [
-    "브랜딩",
-    "마케팅",
-    "고객경험",
-    "혁신성",
-    "가격경쟁력",
-    "신뢰도",
-    "서비스품질",
-  ];
+  // 실제 데이터에서 카테고리 목록 생성
+  const categories = Array.from(
+    new Set([
+      ...ourData.map((d) => d.name),
+      ...competitorData.map((d) => d.name),
+    ])
+  ).filter(Boolean);
+
+  // 데이터가 없으면 기본 카테고리 사용
+  if (categories.length === 0) {
+    return (
+      <div className="flex flex-col items-start p-6 gap-4 bg-white/4 border border-white/10 backdrop-blur-[4px] rounded-xl flex-1">
+        <div className="flex items-center gap-1">
+          <h3 className="text-lg font-bold text-[#F7F8F8]">
+            경쟁사 비교 그래프
+          </h3>
+          <Info className="w-4 h-4 text-white/10" />
+        </div>
+        <div className="flex justify-center items-center w-[276px] h-[254px]">
+          <p className="text-[#8A8F98] text-sm">카테고리 데이터가 없습니다.</p>
+        </div>
+      </div>
+    );
+  }
+
+  // 모든 점수가 0인지 확인
+  const allScoresZero =
+    ourData.every((d) => d.ourScore === 0) &&
+    competitorData.every((d) => d.competitorScore === 0);
+
+  if (allScoresZero) {
+    return (
+      <div className="flex flex-col items-start p-6 gap-4 bg-white/4 border border-white/10 backdrop-blur-[4px] rounded-xl flex-1">
+        <div className="flex items-center gap-1">
+          <h3 className="text-lg font-bold text-[#F7F8F8]">
+            경쟁사 비교 그래프
+          </h3>
+          <Info className="w-4 h-4 text-white/10" />
+        </div>
+        <div className="flex justify-center items-center w-[276px] h-[254px]">
+          <p className="text-[#8A8F98] text-sm">점수 데이터가 없습니다.</p>
+        </div>
+      </div>
+    );
+  }
 
   const center = { x: 138, y: 120 };
   const maxRadius = 90; // 가장 큰 그리드 반지름

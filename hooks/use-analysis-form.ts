@@ -79,22 +79,37 @@ export function useAnalysisForm(jobNo: string) {
       });
 
       console.log("🚀 API Response:", result);
-      console.log(
-        "🔗 Navigating to:",
-        `/result?jobNo=${result.no}&analysisResultNo=${result.no}`
-      );
 
-      // 선택된 브랜드명을 URL 파라미터로 전달
-      const selectedBrand = companies.find(
-        (company) => company.companyNo === formData.targetCompanyNo
-      );
-      const brandName = selectedBrand
-        ? encodeURIComponent(selectedBrand.companyName)
-        : "";
-
-      router.push(
-        `/result?jobNo=${result.no}&analysisResultNo=${result.no}&brandName=${brandName}`
-      );
+      // 분석 결과 생성 후, 해당 job의 분석 결과 정보를 가져와서 첫 번째 기업의 analysisResultNo 사용
+      try {
+        const analysisResultsInfo = await apiClient.getAnalysisResultsInfo(
+          result.no
+        );
+        if (analysisResultsInfo && analysisResultsInfo.length > 0) {
+          const firstCompanyAnalysisResultNo =
+            analysisResultsInfo[0].analysisResultNo;
+          console.log(
+            "🔗 Navigating to:",
+            `/result?jobNo=${result.no}&analysisResultNo=${firstCompanyAnalysisResultNo}`
+          );
+          router.push(
+            `/result?jobNo=${result.no}&analysisResultNo=${firstCompanyAnalysisResultNo}`
+          );
+        } else {
+          // API에서 데이터를 가져올 수 없는 경우 기존 방식 사용
+          console.log(
+            "⚠️ 분석 결과 정보를 가져올 수 없어 jobNo 사용:",
+            `/result?jobNo=${result.no}&analysisResultNo=${result.no}`
+          );
+          router.push(
+            `/result?jobNo=${result.no}&analysisResultNo=${result.no}`
+          );
+        }
+      } catch (infoError) {
+        console.warn("분석 결과 정보 조회 실패, jobNo 사용:", infoError);
+        // API 호출 실패 시 기존 방식 사용
+        router.push(`/result?jobNo=${result.no}&analysisResultNo=${result.no}`);
+      }
     } catch (err) {
       setError("분석을 시작하는데 실패했습니다.");
       console.error("Failed to start analysis:", err);

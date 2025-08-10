@@ -23,16 +23,18 @@ function ResultsPage() {
   const [expandedPrompts, setExpandedPrompts] = useState<number[]>([0]);
   const [selectedCompetitor, setSelectedCompetitor] = useState<string>("");
 
-  // URL에서 브랜드명 가져오기
-  const brandName = searchParams.get("brandName") || "";
+  // URL에서 브랜드명 제거 - 이제 API에서 가져온 첫 번째 기업 이름 사용
+  // const brandName = searchParams.get("brandName") || "";
 
   const {
     analysisResultNo,
     totalScoreData,
     statistics,
     detail,
+    companyInfo,
     loading,
     error,
+    getFirstCompanyName,
     getCategoryChartData,
     getStrongestCategory,
     getWeakestCategory,
@@ -104,12 +106,6 @@ function ResultsPage() {
       setSelectedCompetitor(companies[0].companyNo);
     }
   }, [companies, selectedCompetitor]);
-
-  // 경쟁사 차트 데이터 생성
-  const competitorChartData = competitorScores.map((score) => ({
-    name: score.categoryName,
-    competitorScore: score.companyScore,
-  }));
 
   if (loading) {
     return (
@@ -242,9 +238,7 @@ function ResultsPage() {
                     </p>
                     <div className="flex items-center gap-3">
                       <h2 className="text-[32px] font-bold leading-[110%] tracking-[-0.025em] text-[#F7F8F8]">
-                        {brandName ||
-                          detail?.qaList[0]?.targetCompanyInfo.companyName ||
-                          "분석 대상"}
+                        {getFirstCompanyName()}
                       </h2>
                       <span className="px-4 py-[6px] bg-[#8BBDFF]/8 border border-white/10 backdrop-blur-[4px] rounded-3xl text-sm font-semibold text-[#8BBDFF]">
                         {statistics?.targetCompanyCategoryScoreList[0]
@@ -365,19 +359,22 @@ function ResultsPage() {
             </div>
 
             {/* Charts Section */}
-            {(categoryData.length > 0 || competitorChartData.length > 0) && (
+            {categoryData.length > 0 && (
               <div className="flex gap-3 w-full">
                 <CategoryChart
                   data={categoryData}
                   companies={companies}
                   selectedCompetitor={selectedCompetitor}
                   onCompetitorChange={handleCompetitorChange}
-                  competitorData={competitorChartData}
+                  competitorData={competitorScores.map((score) => ({
+                    name: score.categoryName,
+                    competitorScore: score.companyScore,
+                  }))}
                   analysisId={analysisResultNo || undefined}
                 />
                 <RadarChart
                   ourData={categoryData}
-                  competitorData={competitorChartData}
+                  competitorData={categoryData} // 업계 평균 데이터를 경쟁사 데이터로도 사용
                 />
               </div>
             )}

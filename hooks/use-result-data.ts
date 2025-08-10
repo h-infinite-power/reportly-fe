@@ -26,6 +26,14 @@ export function useResultData() {
     null
   );
   const [detail, setDetail] = useState<AnalysisResultDetail | null>(null);
+  const [companyInfo, setCompanyInfo] = useState<
+    {
+      companyNo: string;
+      companyName: string;
+      analysisResultNo: string;
+      targetCompanyYn: string;
+    }[]
+  >([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -35,20 +43,25 @@ export function useResultData() {
         setLoading(true);
         setError(null);
 
-        // jobNo가 있으면 기본 데이터 로드 시도
+        // jobNo가 있으면 기본 데이터와 회사 정보 로드 시도
         if (jobNo) {
           console.log("📊 기본 데이터 로드 시도:", jobNo);
           try {
-            const [totalScore, statisticsData] = await Promise.all([
-              apiClient.getTotalScoreList(jobNo),
-              apiClient.getAnalysisResultStatistics(jobNo),
-            ]);
+            const [totalScore, statisticsData, companyData] = await Promise.all(
+              [
+                apiClient.getTotalScoreList(jobNo),
+                apiClient.getAnalysisResultStatistics(jobNo),
+                apiClient.getAnalysisResultsInfo(jobNo),
+              ]
+            );
             console.log("✅ 기본 데이터 로드 성공:", {
               totalScore: !!totalScore,
               statistics: !!statisticsData,
+              companyInfo: !!companyData,
             });
             setTotalScoreData(totalScore);
             setStatistics(statisticsData);
+            setCompanyInfo(companyData);
           } catch (err) {
             console.warn("❌ 기본 데이터 로드 실패:", err);
           }
@@ -69,13 +82,18 @@ export function useResultData() {
         }
 
         // 일부 데이터라도 로드되었으면 에러 상태 해제
-        if (totalScoreData || statistics || detail) {
+        if (totalScoreData || statistics || detail || companyInfo.length > 0) {
           setError(null);
         }
       } catch (err) {
         console.error("데이터 로드 중 오류:", err);
         // 전체 실패시에만 에러 상태 설정
-        if (!totalScoreData && !statistics && !detail) {
+        if (
+          !totalScoreData &&
+          !statistics &&
+          !detail &&
+          companyInfo.length === 0
+        ) {
           setError("결과 데이터를 불러오는데 실패했습니다.");
         }
       } finally {
@@ -86,6 +104,14 @@ export function useResultData() {
     loadData();
   }, [jobNo, analysisResultNo]);
 
+  // 첫 번째 기업 이름 가져오기 (대상 기업)
+  const getFirstCompanyName = (): string => {
+    if (companyInfo.length > 0) {
+      return companyInfo[0].companyName;
+    }
+    return detail?.qaList[0]?.targetCompanyInfo.companyName || "분석 대상";
+  };
+
   // 카테고리 차트 데이터 변환
   const getCategoryChartData = (): CategoryData[] => {
     if (!statistics) return [];
@@ -94,8 +120,8 @@ export function useResultData() {
     if (statistics.targetCompanyCategoryScoreList.length === 0) {
       return statistics.competitorCategoryAvgScoreList.map((comp) => ({
         name: comp.categoryName,
-        ourScore: 0, // 타겟 데이터가 없으므로 0으로 설정
-        competitorScore: comp.categoryScore,
+        ourScore: Math.round(comp.categoryScore), // 업계 평균을 우리 점수로 사용 (비교를 위해)
+        competitorScore: Math.round(comp.categoryScore), // 업계 평균을 경쟁사 점수로도 사용
       }));
     }
 
@@ -105,8 +131,8 @@ export function useResultData() {
       );
       return {
         name: target.categoryName,
-        ourScore: target.categoryScore,
-        competitorScore: competitor?.categoryScore || 0,
+        ourScore: Math.round(target.categoryScore), // 소수점 제거
+        competitorScore: Math.round(competitor?.categoryScore || 0), // 소수점 제거
       };
     });
   };
@@ -204,8 +230,10 @@ export function useResultData() {
     totalScoreData,
     statistics,
     detail,
+    companyInfo,
     loading,
     error,
+    getFirstCompanyName,
     getCategoryChartData,
     getStrongestCategory,
     getWeakestCategory,
