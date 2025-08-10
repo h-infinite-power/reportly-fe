@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useSearchParams } from "next/navigation";
 import {
   TotalScoreData,
@@ -8,6 +8,7 @@ import {
   AnalysisResultDetail,
   CategoryData,
   PromptData,
+  AnalysisResultScores,
 } from "@/types";
 import { apiClient } from "@/lib/api";
 
@@ -107,6 +108,14 @@ export function useResultData() {
   // 첫 번째 기업 이름 가져오기 (대상 기업)
   const getFirstCompanyName = (): string => {
     if (companyInfo.length > 0) {
+      // targetCompanyYn이 'Y'인 회사를 찾아서 반환
+      const targetCompany = companyInfo.find(
+        (company) => company.targetCompanyYn === "Y"
+      );
+      if (targetCompany) {
+        return targetCompany.companyName;
+      }
+      // targetCompanyYn이 'Y'인 회사가 없으면 첫 번째 회사 반환
       return companyInfo[0].companyName;
     }
     return detail?.qaList[0]?.targetCompanyInfo.companyName || "분석 대상";
@@ -125,6 +134,7 @@ export function useResultData() {
       }));
     }
 
+    // targetCompanyCategoryScoreList와 competitorCategoryAvgScoreList를 매칭해서 차트 데이터 생성
     return statistics.targetCompanyCategoryScoreList.map((target) => {
       const competitor = statistics.competitorCategoryAvgScoreList.find(
         (comp) => comp.categoryNo === target.categoryNo
@@ -211,7 +221,7 @@ export function useResultData() {
     if (!detail) return [];
     return detail.qaList.map((qa) => ({
       question: qa.question,
-      category: qa.targetCompanyInfo.companyName,
+      category: qa.categoryName, // API에서 제공하는 categoryName 사용
       score: qa.targetCompanyInfo.companyCategoryScore,
       analysis: qa.targetCompanyInfo.content || qa.targetCompanyInfo.summary,
       positiveKeywords: qa.targetCompanyInfo.positiveKeyword || [],
@@ -223,6 +233,19 @@ export function useResultData() {
       })),
     }));
   };
+
+  // 선택된 경쟁사의 카테고리별 점수 조회
+  const getCompetitorScores = useCallback(
+    async (analysisResultNo: string): Promise<AnalysisResultScores[]> => {
+      try {
+        return await apiClient.getAnalysisResultScores(analysisResultNo);
+      } catch (error) {
+        console.error("경쟁사 점수 조회 실패:", error);
+        return [];
+      }
+    },
+    []
+  );
 
   return {
     jobNo,
@@ -239,5 +262,6 @@ export function useResultData() {
     getWeakestCategory,
     getIndustryComparison,
     getPromptData,
+    getCompetitorScores,
   };
 }

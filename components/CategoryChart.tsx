@@ -1,6 +1,5 @@
 import type { CategoryData } from "@/types";
-import { useEffect, useState } from "react";
-import { apiClient } from "@/lib/api";
+import { useEffect, useState, useCallback } from "react";
 
 interface Company {
   companyNo: string;
@@ -14,6 +13,7 @@ interface CategoryChartProps {
   onCompetitorChange: (value: string) => void;
   competitorData: { name: string; competitorScore: number }[]; // 추가
   analysisId?: string; // analysisId 추가 (옵션)
+  getCompetitorScores: (analysisResultNo: string) => Promise<any[]>; // 경쟁사 점수 조회 함수 추가
 }
 
 export default function CategoryChart({
@@ -23,36 +23,34 @@ export default function CategoryChart({
   onCompetitorChange,
   competitorData,
   analysisId, // analysisId 추가
+  getCompetitorScores, // 경쟁사 점수 조회 함수 추가
 }: CategoryChartProps) {
   const [competitorScores, setCompetitorScores] = useState<any[]>([]);
 
-  useEffect(() => {
-    async function fetchCompetitorScores() {
-      if (!selectedCompetitor || !analysisId) {
-        setCompetitorScores([]);
-        return;
-      }
-      try {
-        const scores = await apiClient.getAnalysisResultScores(
-          analysisId,
-          selectedCompetitor
-        );
-        console.log("경쟁사 점수", scores); // ← 콘솔로 값 확인
-        setCompetitorScores(scores);
-      } catch (error) {
-        console.error("경쟁사 점수 조회 실패:", error);
-        setCompetitorScores([]);
-      }
+  const fetchCompetitorScores = useCallback(async () => {
+    if (!selectedCompetitor || !getCompetitorScores) {
+      setCompetitorScores([]);
+      return;
     }
+    try {
+      const scores = await getCompetitorScores(selectedCompetitor);
+      console.log("경쟁사 점수", scores); // ← 콘솔로 값 확인
+      setCompetitorScores(scores);
+    } catch (error) {
+      console.error("경쟁사 점수 조회 실패:", error);
+      setCompetitorScores([]);
+    }
+  }, [selectedCompetitor, getCompetitorScores]);
+
+  useEffect(() => {
     fetchCompetitorScores();
-  }, [selectedCompetitor, analysisId]);
+  }, [fetchCompetitorScores]);
 
   // 선택된 경쟁사의 점수 데이터를 카테고리별로 매핑
   const getCompetitorScoreForCategory = (categoryName: string) => {
     if (!selectedCompetitor || competitorScores.length === 0) {
-      // 경쟁사가 선택되지 않았거나 점수가 없으면 업계 평균 점수 사용
-      const avgScore = competitorData.find((c) => c.name === categoryName);
-      return avgScore ? Math.round(avgScore.competitorScore) : 0;
+      // 경쟁사가 선택되지 않았으면 점수 표시하지 않음
+      return 0;
     }
 
     // 선택된 경쟁사의 개별 점수 사용
@@ -74,12 +72,21 @@ export default function CategoryChart({
             onChange={(e) => onCompetitorChange(e.target.value)}
             className="w-full h-[36px] px-3 bg-white/4 border border-white/10 backdrop-blur-[4px] rounded-md text-sm font-medium leading-[140%] tracking-[-0.025em] text-[#62666D] appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#4989DD] focus:border-transparent"
           >
-            <option value="">업계 평균</option>
-            {companies.map((company) => (
-              <option key={company.companyNo} value={company.companyNo}>
-                {company.companyName}
-              </option>
-            ))}
+            <option value="">경쟁사 선택</option>
+            {companies.map((company) => {
+              // analysisResultNo가 있는 경우에만 옵션 표시
+              if ("analysisResultNo" in company && company.analysisResultNo) {
+                return (
+                  <option
+                    key={company.analysisResultNo}
+                    value={company.analysisResultNo}
+                  >
+                    {company.companyName}
+                  </option>
+                );
+              }
+              return null;
+            })}
           </select>
 
           <svg

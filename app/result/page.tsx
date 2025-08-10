@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useState, useEffect } from "react";
+import { Suspense, useState, useEffect, useCallback } from "react";
 import { ChevronLeft, ChevronDown } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Header from "@/components/Header";
@@ -40,6 +40,7 @@ function ResultsPage() {
     getWeakestCategory,
     getIndustryComparison,
     getPromptData,
+    getCompetitorScores,
   } = useResultData();
 
   // 디버깅을 위한 로그
@@ -66,21 +67,24 @@ function ResultsPage() {
     AnalysisResultScores[]
   >([]);
 
-  useEffect(() => {
-    async function fetchCompetitorScores() {
-      if (!selectedCompetitor || !analysisResultNo) {
-        setCompetitorScores([]);
-        return;
-      }
-      // 선택된 경쟁사 카테고리별 점수 조회
-      const scores = await apiClient.getAnalysisResultScores(
-        analysisResultNo,
-        selectedCompetitor
-      );
-      setCompetitorScores(scores);
+  const fetchCompetitorScores = useCallback(async () => {
+    if (!selectedCompetitor) {
+      setCompetitorScores([]);
+      return;
     }
+    // 선택된 경쟁사의 카테고리별 점수 조회
+    try {
+      const scores = await getCompetitorScores(selectedCompetitor);
+      setCompetitorScores(scores);
+    } catch (error) {
+      console.error("경쟁사 점수 조회 실패:", error);
+      setCompetitorScores([]);
+    }
+  }, [selectedCompetitor, getCompetitorScores]);
+
+  useEffect(() => {
     fetchCompetitorScores();
-  }, [selectedCompetitor, analysisResultNo]);
+  }, [fetchCompetitorScores]);
 
   const togglePrompt = (index: number) => {
     setExpandedPrompts((prev) =>
@@ -97,13 +101,19 @@ function ResultsPage() {
     // 필요하면 경쟁사 선택시 추가 로직 작성 가능
   };
 
-  // 경쟁사 목록 (detail에 데이터가 없다면 빈 배열로 초기화)
-  const companies = detail?.competitorCompanyInfoList || [];
+  // 경쟁사 목록 (companyInfo에서 가져오기, detail이 있다면 병합)
+  const companies =
+    companyInfo.length > 0
+      ? companyInfo
+      : detail?.competitorCompanyInfoList || [];
 
-  // 경쟁사 첫 번째 값으로 default 설정
+  // 경쟁사 첫 번째 값으로 default 설정 (analysisResultNo가 있는 경우에만)
   useEffect(() => {
     if (companies.length > 0 && !selectedCompetitor) {
-      setSelectedCompetitor(companies[0].companyNo);
+      const firstCompany = companies[0];
+      if ("analysisResultNo" in firstCompany && firstCompany.analysisResultNo) {
+        setSelectedCompetitor(firstCompany.analysisResultNo);
+      }
     }
   }, [companies, selectedCompetitor]);
 
@@ -242,7 +252,10 @@ function ResultsPage() {
                       </h2>
                       <span className="px-4 py-[6px] bg-[#8BBDFF]/8 border border-white/10 backdrop-blur-[4px] rounded-3xl text-sm font-semibold text-[#8BBDFF]">
                         {statistics?.targetCompanyCategoryScoreList[0]
-                          ?.categoryName || "업종"}
+                          ?.categoryName ||
+                          statistics?.competitorCategoryAvgScoreList[0]
+                            ?.categoryName ||
+                          "업종"}
                       </span>
                     </div>
                   </div>
@@ -329,7 +342,7 @@ function ResultsPage() {
             <div className="flex flex-col justify-center items-start p-6 gap-6 w-full bg-white/4 border border-white/10 backdrop-blur-[4px] rounded-xl">
               <div className="flex justify-between items-center w-full">
                 <div className="flex items-center gap-[6px]">
-                  <div className="w-5 h-5 bg-gradient-to-r from-[#B0ADFF] to-[#4E49DD] rounded-full border border-[#8BBDFF]/8 shadow-[0px_0px_4px_rgba(0,0,0,0.16),inset_0px_0px_2px_rgba(128,148,246,0.4)]" />
+                  <div className="w-5 h-5 bg-gradient-to-r from-[#B0ADFF] to-[#4E49DD] rounded-xl" />
                   <span className="text-lg font-bold text-[#F7F8F8]">
                     AI 인사이트 요약
                   </span>
@@ -366,11 +379,14 @@ function ResultsPage() {
                   companies={companies}
                   selectedCompetitor={selectedCompetitor}
                   onCompetitorChange={handleCompetitorChange}
-                  competitorData={competitorScores.map((score) => ({
-                    name: score.categoryName,
-                    competitorScore: score.companyScore,
+                  competitorData={categoryData.map((category) => ({
+                    name: category.name,
+                    competitorScore: category.competitorScore,
                   }))}
-                  analysisId={analysisResultNo || undefined}
+                  analysisId={
+                    selectedCompetitor || analysisResultNo || undefined
+                  }
+                  getCompetitorScores={getCompetitorScores}
                 />
                 <RadarChart
                   ourData={categoryData}
@@ -386,24 +402,13 @@ function ResultsPage() {
                   프롬프트 분석
                 </h3>
 
-                <div className="flex flex-col w-full gap-0">
+                <div className="flex flex-col w-full gap-3">
                   {prompts.map((prompt, index) => (
                     <PromptItem
                       key={index}
                       prompt={prompt}
                       isExpanded={expandedPrompts.includes(index)}
                       onToggle={() => togglePrompt(index)}
-                    />
-                  ))}
-
-                  {/* Additional collapsed prompts */}
-                  {prompts.slice(1).map((prompt, index) => (
-                    <CollapsedPromptItem
-                      key={index + 1}
-                      question={prompt.question}
-                      category={prompt.category}
-                      score={prompt.score}
-                      onClick={() => togglePrompt(index + 1)}
                     />
                   ))}
                 </div>

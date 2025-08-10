@@ -104,12 +104,14 @@ export interface CompanyInfo {
   positiveKeyword?: string[]; // 복수형 키워드 배열로 변경
   negativeKeyword?: string[];
   companyCategoryScore: number;
+  analysisResultNo?: string; // 분석 결과 번호 (optional)
 }
 
 // QA 데이터 구조에 맞춤
 export interface QAData {
   questionNo: string;
   categoryNo: string;
+  categoryName: string; // API 문서에 따라 추가
   question: string;
   targetCompanyInfo: CompanyInfo;
   competitorCompanyInfo: CompanyInfo[];

@@ -137,11 +137,10 @@ class ApiClient {
 
   // 분석 결과 카테고리별 점수 조회
   async getAnalysisResultScores(
-    analysisResultNo: string,
-    companyNo: string
+    analysisResultNo: string
   ): Promise<AnalysisResultScores[]> {
     return this.request<AnalysisResultScores[]>(
-      `/analysis-results/${analysisResultNo}/analysis-result-scores?companyNo=${companyNo}`
+      `/analysis-results/${analysisResultNo}/analysis-result-scores`
     );
   }
 
