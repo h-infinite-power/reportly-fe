@@ -3,6 +3,7 @@ export interface MetricCardProps {
   value: string;
   subtitle: string;
   hasInfo?: boolean;
+  subtitleClassName?: string;
 }
 
 export interface InsightCardProps {
@@ -50,7 +51,8 @@ export interface Industry {
 }
 
 export interface AnalysisResult {
-  analysisResultNo: string;
+  key: string;
+  no: string;
 }
 
 export interface AnalysisRequest {

@@ -102,14 +102,11 @@ class ApiClient {
     data: AnalysisRequest
   ): Promise<AnalysisResult> {
     console.log("📊 분석 요청 데이터:", data, "jobNo:", jobNo);
-    const res = await this.request<{ analysisResultNo: string }>(
-      `/jobs/${jobNo}/analysis-results`,
-      {
-        method: "POST",
-        body: JSON.stringify(data),
-      }
-    );
-    return { analysisResultNo: res.analysisResultNo };
+    const res = await this.request<{ key: string; no: string }>(`/jobs`, {
+      method: "POST",
+      body: JSON.stringify(data),
+    });
+    return { key: res.key, no: res.no };
   }
 
   // 종합 점수 목록 조회

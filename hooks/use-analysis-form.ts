@@ -78,8 +78,22 @@ export function useAnalysisForm(jobNo: string) {
         competitorCompanyNoList: competitorList,
       });
 
+      console.log("🚀 API Response:", result);
+      console.log(
+        "🔗 Navigating to:",
+        `/result?jobNo=${result.no}&analysisResultNo=${result.no}`
+      );
+
+      // 선택된 브랜드명을 URL 파라미터로 전달
+      const selectedBrand = companies.find(
+        (company) => company.companyNo === formData.targetCompanyNo
+      );
+      const brandName = selectedBrand
+        ? encodeURIComponent(selectedBrand.companyName)
+        : "";
+
       router.push(
-        `/result?jobNo=${jobNo}&analysisId=${result.analysisResultNo}`
+        `/result?jobNo=${result.no}&analysisResultNo=${result.no}&brandName=${brandName}`
       );
     } catch (err) {
       setError("분석을 시작하는데 실패했습니다.");

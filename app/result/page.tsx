@@ -2,7 +2,7 @@
 
 import { Suspense, useState, useEffect } from "react";
 import { ChevronLeft, ChevronDown } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Header from "@/components/Header";
 import MetricCard from "@/components/MetricCard";
 import InsightCard from "@/components/InsightCard";
@@ -19,11 +19,15 @@ import { AnalysisResultScores } from "@/types"; // 타입 import 필요
 
 function ResultsPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [expandedPrompts, setExpandedPrompts] = useState<number[]>([0]);
   const [selectedCompetitor, setSelectedCompetitor] = useState<string>("");
 
+  // URL에서 브랜드명 가져오기
+  const brandName = searchParams.get("brandName") || "";
+
   const {
-    analysisId,
+    analysisResultNo,
     totalScoreData,
     statistics,
     detail,
@@ -36,25 +40,45 @@ function ResultsPage() {
     getPromptData,
   } = useResultData();
 
+  // 디버깅을 위한 로그
+  console.log("🔍 Result Page Debug:", {
+    analysisResultNo,
+    totalScoreData: !!totalScoreData,
+    statistics: !!statistics,
+    detail: !!detail,
+    loading,
+    error,
+  });
+
+  // 통계 데이터 디버깅
+  if (statistics) {
+    console.log("📊 Statistics Debug:", {
+      targetCompanyCategories: statistics.targetCompanyCategoryScoreList.length,
+      competitorCategories: statistics.competitorCategoryAvgScoreList.length,
+      targetData: statistics.targetCompanyCategoryScoreList,
+      competitorData: statistics.competitorCategoryAvgScoreList,
+    });
+  }
+
   const [competitorScores, setCompetitorScores] = useState<
     AnalysisResultScores[]
   >([]);
 
   useEffect(() => {
     async function fetchCompetitorScores() {
-      if (!selectedCompetitor || !analysisId) {
+      if (!selectedCompetitor || !analysisResultNo) {
         setCompetitorScores([]);
         return;
       }
       // 선택된 경쟁사 카테고리별 점수 조회
       const scores = await apiClient.getAnalysisResultScores(
-        analysisId,
+        analysisResultNo,
         selectedCompetitor
       );
       setCompetitorScores(scores);
     }
     fetchCompetitorScores();
-  }, [selectedCompetitor, analysisId]);
+  }, [selectedCompetitor, analysisResultNo]);
 
   const togglePrompt = (index: number) => {
     setExpandedPrompts((prev) =>
@@ -132,7 +156,10 @@ function ResultsPage() {
     );
   }
 
-  if (!totalScoreData || !statistics || !detail) {
+  // 일부 데이터라도 있으면 페이지 렌더링 시도
+  const hasAnyData = totalScoreData || statistics || detail;
+
+  if (!hasAnyData && !loading) {
     return (
       <div className="min-h-screen w-full bg-[#08090A] relative overflow-hidden">
         <div
@@ -140,7 +167,7 @@ function ResultsPage() {
           style={{
             background: `
               radial-gradient(80% 50% at 50% -20%, rgba(120, 119, 198, 0.3) 0%, rgba(120, 119, 198, 0) 100%),
-              radial-gradient(60% 50% at 80% 20%, rgba(78, 73, 221, 0.15) 0%, rgba(78, 73, 221, 0) 100%),
+              radial-gradient(60% 50% at 80% 20%, rgba(78, 73, 221, 0.15) 0%, rgba(120, 119, 198, 0) 100%),
               #08090A
             `,
           }}
@@ -179,6 +206,20 @@ function ResultsPage() {
         {/* Main Content */}
         <main className="flex flex-col items-center gap-40 flex-1 w-full max-w-[960px] pt-14">
           <div className="flex flex-col items-center gap-14 w-full">
+            {/* Data Status Indicator */}
+            {!hasAnyData && loading && (
+              <div className="w-full p-6 bg-white/4 border border-white/10 backdrop-blur-[4px] rounded-xl text-center">
+                <p className="text-[#F7F8F8]">데이터를 불러오는 중입니다...</p>
+              </div>
+            )}
+
+            {!hasAnyData && !loading && (
+              <div className="w-full p-6 bg-white/4 border border-white/10 backdrop-blur-[4px] rounded-xl text-center">
+                <p className="text-[#F7F8F8]">
+                  분석 데이터가 준비되지 않았습니다. 잠시 후 다시 시도해주세요.
+                </p>
+              </div>
+            )}
             {/* Back Button & Header Info */}
             <div className="flex flex-col items-start gap-5 w-full">
               <button
@@ -201,11 +242,12 @@ function ResultsPage() {
                     </p>
                     <div className="flex items-center gap-3">
                       <h2 className="text-[32px] font-bold leading-[110%] tracking-[-0.025em] text-[#F7F8F8]">
-                        {detail.qaList[0]?.targetCompanyInfo.companyName ||
+                        {brandName ||
+                          detail?.qaList[0]?.targetCompanyInfo.companyName ||
                           "분석 대상"}
                       </h2>
                       <span className="px-4 py-[6px] bg-[#8BBDFF]/8 border border-white/10 backdrop-blur-[4px] rounded-3xl text-sm font-semibold text-[#8BBDFF]">
-                        {statistics.targetCompanyCategoryScoreList[0]
+                        {statistics?.targetCompanyCategoryScoreList[0]
                           ?.categoryName || "업종"}
                       </span>
                     </div>
@@ -223,36 +265,70 @@ function ResultsPage() {
 
             {/* Key Metrics Cards */}
             <div className="flex gap-3 w-full">
-              <MetricCard
-                title="종합 점수"
-                value={`${totalScoreData.targetTotalScore}점`}
-                subtitle={`업계 평균 대비 ${industryComparison}`}
-                hasInfo
-              />
-              <MetricCard
-                title="경쟁력 순위"
-                value={`${totalScoreData.targetRank}위`}
-                subtitle={`${totalScoreData.totalCompanyCount}개의 브랜드 중`}
-                hasInfo
-              />
-              <MetricCard
-                title="강점 카테고리"
-                value={strongestCategory}
-                subtitle={`${Math.max(
-                  ...statistics.targetCompanyCategoryScoreList.map(
-                    (cat) => cat.categoryScore
-                  )
-                )}점 최고 득점`}
-              />
-              <MetricCard
-                title="약점 카테고리"
-                value={weakestCategory}
-                subtitle={`${Math.min(
-                  ...statistics.targetCompanyCategoryScoreList.map(
-                    (cat) => cat.categoryScore
-                  )
-                )}점 최저 득점`}
-              />
+              {totalScoreData && (
+                <>
+                  <MetricCard
+                    title="종합 점수"
+                    value={`${totalScoreData.targetTotalScore}점`}
+                    subtitle={`업계 평균 대비 ${industryComparison}`}
+                    hasInfo
+                  />
+                  <MetricCard
+                    title="경쟁력 순위"
+                    value={`${totalScoreData.targetRank}위`}
+                    subtitle={`${totalScoreData.totalCompanyCount}개의 브랜드 중`}
+                    hasInfo
+                  />
+                </>
+              )}
+              {statistics && (
+                <>
+                  <MetricCard
+                    title="강점 카테고리"
+                    value={strongestCategory}
+                    subtitle={
+                      statistics.targetCompanyCategoryScoreList.length > 0
+                        ? `${Math.round(
+                            Math.max(
+                              ...statistics.targetCompanyCategoryScoreList.map(
+                                (cat) => cat.categoryScore
+                              )
+                            )
+                          )}점 최고 득점`
+                        : `${Math.round(
+                            Math.max(
+                              ...statistics.competitorCategoryAvgScoreList.map(
+                                (cat) => cat.categoryScore
+                              )
+                            )
+                          )}점 최고 득점`
+                    }
+                    subtitleClassName="text-[#ABF8AD]"
+                  />
+                  <MetricCard
+                    title="약점 카테고리"
+                    value={weakestCategory}
+                    subtitle={
+                      statistics.targetCompanyCategoryScoreList.length > 0
+                        ? `${Math.round(
+                            Math.min(
+                              ...statistics.targetCompanyCategoryScoreList.map(
+                                (cat) => cat.categoryScore
+                              )
+                            )
+                          )}점 최저 득점`
+                        : `${Math.round(
+                            Math.min(
+                              ...statistics.competitorCategoryAvgScoreList.map(
+                                (cat) => cat.categoryScore
+                              )
+                            )
+                          )}점 격차`
+                    }
+                    subtitleClassName="text-[#FF9696]"
+                  />
+                </>
+              )}
             </div>
 
             {/* AI Insights */}
@@ -267,69 +343,75 @@ function ResultsPage() {
                 <ChevronDown className="w-4 h-4 text-[#F7F8F8] rotate-[-90deg]" />
               </div>
 
-              <div className="flex gap-6 w-full">
-                <InsightCard
-                  type="strength"
-                  title="강점"
-                  content={detail.strongPoint}
-                />
-                <InsightCard
-                  type="weakness"
-                  title="약점"
-                  content={detail.weakPoint}
-                />
-                <InsightCard
-                  type="improvement"
-                  title="개선제안"
-                  content={detail.improvements}
-                />
-              </div>
+              {detail && (
+                <div className="flex gap-6 w-full">
+                  <InsightCard
+                    type="strength"
+                    title="강점"
+                    content={detail.strongPoint}
+                  />
+                  <InsightCard
+                    type="weakness"
+                    title="약점"
+                    content={detail.weakPoint}
+                  />
+                  <InsightCard
+                    type="improvement"
+                    title="개선제안"
+                    content={detail.improvements}
+                  />
+                </div>
+              )}
             </div>
 
             {/* Charts Section */}
-            <div className="flex gap-3 w-full">
-              <CategoryChart
-                data={categoryData}
-                companies={companies}
-                selectedCompetitor={selectedCompetitor}
-                onCompetitorChange={handleCompetitorChange}
-                competitorData={competitorChartData}
-                analysisId={analysisId} // ← 이 부분 추가
-              />
-              <RadarChart
-                ourData={categoryData}
-                competitorData={competitorChartData} // 추가
-              />
-            </div>
+            {(categoryData.length > 0 || competitorChartData.length > 0) && (
+              <div className="flex gap-3 w-full">
+                <CategoryChart
+                  data={categoryData}
+                  companies={companies}
+                  selectedCompetitor={selectedCompetitor}
+                  onCompetitorChange={handleCompetitorChange}
+                  competitorData={competitorChartData}
+                  analysisId={analysisResultNo || undefined}
+                />
+                <RadarChart
+                  ourData={categoryData}
+                  competitorData={competitorChartData}
+                />
+              </div>
+            )}
 
             {/* Prompt Analysis */}
-            <div className="flex flex-col items-start p-6 gap-4 w-full bg-white/4 border border-white/10 backdrop-blur-[4px] rounded-xl">
-              <h3 className="text-lg font-bold text-[#F7F8F8]">
-                프롬프트 분석
-              </h3>
+            {prompts.length > 0 && (
+              <div className="flex flex-col items-start p-6 gap-4 w-full bg-white/4 border border-white/10 backdrop-blur-[4px] rounded-xl">
+                <h3 className="text-lg font-bold text-[#F7F8F8]">
+                  프롬프트 분석
+                </h3>
 
-              <div className="flex flex-col w-full gap-0">
-                {prompts.map((prompt, index) => (
-                  <PromptItem
-                    key={index}
-                    prompt={prompt}
-                    isExpanded={expandedPrompts.includes(index)}
-                    onToggle={() => togglePrompt(index)}
-                  />
-                ))}
+                <div className="flex flex-col w-full gap-0">
+                  {prompts.map((prompt, index) => (
+                    <PromptItem
+                      key={index}
+                      prompt={prompt}
+                      isExpanded={expandedPrompts.includes(index)}
+                      onToggle={() => togglePrompt(index)}
+                    />
+                  ))}
 
-                {/* Additional collapsed prompts */}
-                {prompts.slice(1).map((prompt, index) => (
-                  <CollapsedPromptItem
-                    key={index + 1}
-                    question={prompt.question}
-                    category={prompt.category}
-                    score={prompt.score}
-                    onClick={() => togglePrompt(index + 1)}
-                  />
-                ))}
+                  {/* Additional collapsed prompts */}
+                  {prompts.slice(1).map((prompt, index) => (
+                    <CollapsedPromptItem
+                      key={index + 1}
+                      question={prompt.question}
+                      category={prompt.category}
+                      score={prompt.score}
+                      onClick={() => togglePrompt(index + 1)}
+                    />
+                  ))}
+                </div>
               </div>
-            </div>
+            )}
           </div>
         </main>
 
