@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useState, useEffect, useCallback } from "react";
+import { Suspense, useState, useEffect, useCallback, useRef } from "react";
 import { ChevronLeft, ChevronDown } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Header from "@/components/Header";
@@ -17,13 +17,17 @@ import { useResultData } from "@/hooks/use-result-data";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { apiClient } from "@/lib/api"; // API 클라이언트 import 필요
 import { AnalysisResultScores } from "@/types"; // 타입 import 필요
+import { generateCurrentPagePDF } from "@/lib/pdf-api";
 
 function ResultsPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [expandedPrompts, setExpandedPrompts] = useState<number[]>([0]);
   const [selectedCompetitor, setSelectedCompetitor] = useState<string>("");
+  const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
+  const [pdfProgress, setPdfProgress] = useState<string>("");
   const isMobile = useIsMobile();
+  const contentRef = useRef<HTMLDivElement>(null);
 
   // URL에서 브랜드명 제거 - 이제 API에서 가져온 첫 번째 기업 이름 사용
   // const brandName = searchParams.get("brandName") || "";
@@ -103,6 +107,59 @@ function ResultsPage() {
     // 필요하면 경쟁사 선택시 추가 로직 작성 가능
   };
 
+  // PDF 다운로드 핸들러
+  const handleDownloadClick = async () => {
+    if (!contentRef.current) {
+      alert("PDF 생성에 필요한 콘텐츠를 찾을 수 없습니다.");
+      return;
+    }
+
+    setIsGeneratingPDF(true);
+    setPdfProgress("페이지 준비 중...");
+
+    try {
+      const companyName = getFirstCompanyName() || "기업";
+      const filename = `reportly-${companyName}-분석결과.pdf`;
+
+      // 진행 상황 업데이트를 위한 타이머 설정
+      const progressTimer = setInterval(() => {
+        setPdfProgress((prev) => {
+          if (prev === "페이지 준비 중...") return "차트 렌더링 중...";
+          if (prev === "차트 렌더링 중...") return "이미지 변환 중...";
+          if (prev === "이미지 변환 중...") return "PDF 생성 중...";
+          return "PDF 생성 중...";
+        });
+      }, 2000);
+
+      await generateCurrentPagePDF(filename);
+
+      clearInterval(progressTimer);
+      setPdfProgress("완료!");
+
+      // 완료 메시지를 잠시 표시 후 초기화
+      setTimeout(() => {
+        setPdfProgress("");
+      }, 1000);
+    } catch (error) {
+      console.error("PDF 생성 실패:", error);
+
+      let errorMessage = "PDF 생성에 실패했습니다.";
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      }
+
+      setPdfProgress("오류 발생");
+      alert(`PDF 생성에 실패했습니다: ${errorMessage}`);
+
+      // 오류 메시지를 잠시 표시 후 초기화
+      setTimeout(() => {
+        setPdfProgress("");
+      }, 3000);
+    } finally {
+      setIsGeneratingPDF(false);
+    }
+  };
+
   // 경쟁사 목록 (companyInfo에서 가져오기, detail이 있다면 병합)
   const companies =
     companyInfo.length > 0
@@ -133,7 +190,11 @@ function ResultsPage() {
           }}
         />
         <div className="relative z-10 flex flex-col items-center min-h-screen">
-          <Header showDownloadButton />
+          <Header
+            showDownloadButton
+            onDownloadClick={handleDownloadClick}
+            isGeneratingPDF={isGeneratingPDF}
+          />
           <LoadingSpinner />
         </div>
       </div>
@@ -154,7 +215,11 @@ function ResultsPage() {
           }}
         />
         <div className="relative z-10 flex flex-col items-center min-h-screen">
-          <Header showDownloadButton />
+          <Header
+            showDownloadButton
+            onDownloadClick={handleDownloadClick}
+            isGeneratingPDF={isGeneratingPDF}
+          />
           <ErrorDisplay
             message={error}
             onRetry={() => window.location.reload()}
@@ -181,7 +246,11 @@ function ResultsPage() {
           }}
         />
         <div className="relative z-10 flex flex-col items-center min-h-screen">
-          <Header showDownloadButton />
+          <Header
+            showDownloadButton
+            onDownloadClick={handleDownloadClick}
+            isGeneratingPDF={isGeneratingPDF}
+          />
           <ErrorDisplay message="분석 결과를 찾을 수 없습니다." />
         </div>
       </div>
@@ -209,10 +278,17 @@ function ResultsPage() {
       />
 
       <div className="relative z-10 flex flex-col items-center min-h-screen">
-        <Header showDownloadButton />
+        <Header
+          showDownloadButton
+          onDownloadClick={handleDownloadClick}
+          isGeneratingPDF={isGeneratingPDF}
+          pdfProgress={pdfProgress}
+        />
 
         {/* Main Content */}
         <main
+          ref={contentRef}
+          id="result-page-content"
           className={`flex flex-col items-center gap-40 flex-1 w-full max-w-[960px] pt-14 ${
             isMobile ? "px-4 gap-20" : ""
           }`}
