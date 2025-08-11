@@ -4,74 +4,72 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --destructive-foreground: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
+  --background: #ffffff;
+  --foreground: #0f172a;
+  --card: #ffffff;
+  --card-foreground: #0f172a;
+  --popover: #ffffff;
+  --popover-foreground: #0f172a;
+  --primary: #0f172a;
+  --primary-foreground: #ffffff;
+  --secondary: #f8fafc;
+  --secondary-foreground: #0f172a;
+  --muted: #f8fafc;
+  --muted-foreground: #64748b;
+  --accent: #f8fafc;
+  --accent-foreground: #0f172a;
+  --destructive: #ef4444;
+  --destructive-foreground: #ffffff;
+  --border: #e2e8f0;
+  --input: #e2e8f0;
+  --ring: #0f172a;
+  --chart-1: #3b82f6;
+  --chart-2: #10b981;
+  --chart-3: #f59e0b;
+  --chart-4: #ef4444;
+  --chart-5: #8b5cf6;
   --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  --sidebar: #ffffff;
+  --sidebar-foreground: #0f172a;
+  --sidebar-primary: #0f172a;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #f8fafc;
+  --sidebar-accent-foreground: #0f172a;
+  --sidebar-border: #e2e8f0;
+  --sidebar-ring: #0f172a;
 }
 
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.145 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.145 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.985 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.396 0.141 25.723);
-  --destructive-foreground: oklch(0.637 0.237 25.331);
-  --border: oklch(0.269 0 0);
-  --input: oklch(0.269 0 0);
-  --ring: oklch(0.439 0 0);
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(0.269 0 0);
-  --sidebar-ring: oklch(0.439 0 0);
+  --background: #0f172a;
+  --foreground: #ffffff;
+  --card: #0f172a;
+  --card-foreground: #ffffff;
+  --popover: #0f172a;
+  --popover-foreground: #ffffff;
+  --primary: #ffffff;
+  --primary-foreground: #0f172a;
+  --secondary: #1e293b;
+  --secondary-foreground: #ffffff;
+  --accent: #1e293b;
+  --accent-foreground: #ffffff;
+  --destructive: #dc2626;
+  --destructive-foreground: #ffffff;
+  --border: #1e293b;
+  --input: #1e293b;
+  --ring: #475569;
+  --chart-1: #3b82f6;
+  --chart-2: #10b981;
+  --chart-3: #f59e0b;
+  --chart-4: #ef4444;
+  --chart-5: #8b5cf6;
+  --sidebar: #0f172a;
+  --sidebar-foreground: #ffffff;
+  --sidebar-primary: #3b82f6;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #1e293b;
+  --sidebar-accent-foreground: #ffffff;
+  --sidebar-border: #1e293b;
+  --sidebar-ring: #475569;
 }
 
 @theme inline {
@@ -138,6 +136,104 @@
 
 ::-webkit-scrollbar-thumb:hover {
   background: rgba(255, 255, 255, 0.5);
+}
+
+/* PDF 생성 전용 스타일 */
+.pdf-export {
+  background: #ffffff !important;
+  color: #000000 !important;
+}
+
+.pdf-export * {
+  background: #ffffff !important;
+  color: #000000 !important;
+  border-color: #e2e8f0 !important;
+}
+
+.pdf-export .bg-\[#08090A\] {
+  background: #ffffff !important;
+}
+
+.pdf-export .text-\[#F7F8F8\] {
+  color: #000000 !important;
+}
+
+.pdf-export .text-\[#8A8F98\] {
+  color: #4a5568 !important;
+}
+
+.pdf-export .text-\[#8BBDFF\] {
+  color: #2563eb !important;
+}
+
+.pdf-export .text-\[#ABF8AD\] {
+  color: #059669 !important;
+}
+
+.pdf-export .text-\[#FF9696\] {
+  color: #dc2626 !important;
+}
+
+.pdf-export .bg-white\/4 {
+  background: #f8fafc !important;
+}
+
+.pdf-export .border-white\/10 {
+  border-color: #e2e8f0 !important;
+}
+
+.pdf-export .bg-gradient-to-r {
+  background: #e2e8f0 !important;
+}
+
+/* 차트 관련 PDF 스타일 */
+.pdf-export svg {
+  background: #ffffff !important;
+  color: #000000 !important;
+}
+
+.pdf-export svg * {
+  background: transparent !important;
+}
+
+.pdf-export svg text {
+  fill: #000000 !important;
+  color: #000000 !important;
+}
+
+.pdf-export svg path {
+  stroke: #000000 !important;
+  fill: #000000 !important;
+}
+
+.pdf-export svg circle {
+  stroke: #000000 !important;
+  fill: #000000 !important;
+}
+
+.pdf-export svg rect {
+  stroke: #000000 !important;
+  fill: #000000 !important;
+}
+
+/* 차트 컨테이너 스타일 */
+.pdf-export [class*="chart"],
+.pdf-export [class*="Chart"] {
+  background: #ffffff !important;
+  border: 2px solid #e2e8f0 !important;
+}
+
+/* 메트릭 카드 스타일 */
+.pdf-export .bg-gradient-to-t {
+  background: #e2e8f0 !important;
+}
+
+.pdf-export .from-\[#4E49DD\] {
+  background: #3b82f6 !important;
+}
+
+.pdf-export .to-\[#6E9CBD\] {
+  background: #60a5fa !important;
 }
 
 @layer base {

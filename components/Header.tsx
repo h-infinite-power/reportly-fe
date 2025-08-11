@@ -1,4 +1,5 @@
 import { useIsMobile } from "@/hooks/use-mobile";
+import PDFDownloadButton from "./PDFDownloadButton";
 
 interface HeaderProps {
   showDownloadButton?: boolean;
@@ -21,13 +22,7 @@ export default function Header({ showDownloadButton = false }: HeaderProps) {
         Reportly
       </h1>
       {showDownloadButton ? (
-        <button
-          className={`bg-white/6 border border-white/10 backdrop-blur-[4px] rounded-xl font-semibold text-[#D0D6E0] hover:bg-white/8 transition-colors ${
-            isMobile ? "px-3 py-2 text-sm" : "px-5 py-[13px] text-base"
-          }`}
-        >
-          리포트 다운
-        </button>
+        <PDFDownloadButton />
       ) : (
         <div className={`h-10 ${isMobile ? "w-12" : "w-[68px]"}`} />
       )}

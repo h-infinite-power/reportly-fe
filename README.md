@@ -1,121 +1,116 @@
-# Reportly - LLM 시선 기반 브랜드 평가 시스템
+# Reportly Frontend
 
-LLM이 인식하는 브랜드 이미지를 분석하고, 경쟁사와의 포지셔닝을 시각화하여 제공하는 시스템입니다.
+Reportly는 AI 기반 브랜드 분석 리포트를 제공하는 웹 애플리케이션입니다.
 
-## 🚀 시작하기
+## 주요 기능
 
-### 1. 의존성 설치
+- **AI 분석 리포트**: LLM 기반 브랜드 분석 결과 제공
+- **카테고리별 점수 비교**: 다양한 카테고리에서의 경쟁력 분석
+- **경쟁사 비교**: 업계 내 경쟁사와의 비교 분석
+- **PDF 다운로드**: 분석 결과를 PDF 형태로 다운로드 가능
+- **반응형 디자인**: 모바일과 데스크톱 모두 지원
+
+## PDF 다운로드 기능
+
+### 특징
+
+- **고품질 PDF 생성**: html2canvas와 jsPDF를 사용한 고품질 변환
+- **차트 지원**: SVG 차트와 그래프가 포함된 완벽한 PDF 생성
+- **진행 상황 표시**: PDF 생성 진행률을 실시간으로 확인
+- **에러 처리**: 생성 실패 시 적절한 에러 메시지 표시
+
+### 사용법
+
+1. 결과지 페이지에서 우측 상단의 "리포트 다운" 버튼 클릭
+2. PDF 생성 진행 상황 확인
+3. 생성 완료 시 자동으로 다운로드
+4. 파일명: `reportly-report-YYYY-MM-DD.pdf`
+
+### 기술적 특징
+
+- **oklch 색상 함수 오류 방지**: 안전한 hex 색상으로 대체
+- **SVG 렌더링 최적화**: 차트와 그래프의 완벽한 PDF 변환
+- **메모리 효율성**: 대용량 콘텐츠도 안정적인 PDF 생성
+- **크로스 브라우저 지원**: 모든 최신 브라우저에서 작동
+
+## 설치 및 실행
+
+### 의존성 설치
 
 ```bash
 npm install
 ```
 
-### 2. 환경 설정
-
-프로젝트 루트에 `.env.local` 파일을 생성하고 다음 내용을 추가하세요:
-
-```bash
-# 로컬 개발 환경 (Node.js 서버가 8080 포트에서 실행될 때)
-NEXT_PUBLIC_API_BASE_URL=http://localhost:8080/reportly-api
-
-# 프로덕션 환경 (기본값)
-# NEXT_PUBLIC_API_BASE_URL=https://h-infinite-power.store/reportly-api
-```
-
-### 3. 개발 서버 실행
+### 개발 서버 실행
 
 ```bash
 npm run dev
 ```
 
-브라우저에서 [http://localhost:3001](http://localhost:3001)을 열어 애플리케이션을 확인하세요.
+### 빌드
 
-## 🔧 환경 설정
+```bash
+npm run build
+```
 
-### 로컬 개발 환경
+### 프로덕션 실행
 
-1. **Node.js 백엔드 서버 실행** (8080 포트)
-2. **환경 변수 설정**:
-   ```bash
-   NEXT_PUBLIC_API_BASE_URL=http://localhost:8080/reportly-api
-   ```
-3. **프론트엔드 실행**:
-   ```bash
-   npm run dev
-   ```
+```bash
+npm start
+```
 
-### 프로덕션 환경
+## 기술 스택
 
-1. **환경 변수 설정** (선택사항):
-   ```bash
-   NEXT_PUBLIC_API_BASE_URL=https://h-infinite-power.store/reportly-api
-   ```
-2. **빌드 및 배포**:
-   ```bash
-   npm run build
-   npm start
-   ```
+- **Frontend**: Next.js 15, React 19, TypeScript
+- **Styling**: Tailwind CSS v4
+- **UI Components**: Radix UI
+- **Charts**: Custom SVG charts
+- **PDF Generation**: html2canvas, jsPDF
+- **State Management**: React Hooks
+- **Build Tool**: Next.js
 
-## 📊 기능
-
-### 메인페이지
-
-- 브랜드 선택 (API에서 동적 로드)
-- 업종 선택 (이커머스, 금융/핀테크 등)
-- 경쟁사 선택 (최대 3개)
-- AI 분석 시작
-
-### 결과페이지
-
-- 종합 점수 및 경쟁력 순위
-- 강점/약점 카테고리 분석
-- AI 인사이트 요약 (강점, 약점, 개선제안)
-- 카테고리별 점수 차트
-- 레이더 차트 (경쟁사 비교)
-- 프롬프트 분석 상세 내용
-
-## 🛠️ 기술 스택
-
-- **Frontend**: Next.js 15, TypeScript, TailwindCSS
-- **상태 관리**: React Hooks
-- **API**: RESTful API 연동
-- **개발 도구**: ESLint, Prettier
-
-## 📁 프로젝트 구조
+## 프로젝트 구조
 
 ```
 reportly-fe/
 ├── app/                    # Next.js App Router
-│   ├── page.tsx           # 메인페이지
-│   └── result/
-│       └── page.tsx       # 결과페이지
-├── components/             # 재사용 가능한 컴포넌트
-├── hooks/                 # 커스텀 훅
-├── lib/                   # 유틸리티 및 API 클라이언트
-├── types/                 # TypeScript 타입 정의
-└── docs/                  # 프로젝트 문서
+│   ├── result/            # 결과지 페이지
+│   └── test-pdf/          # PDF 테스트 페이지
+├── components/             # React 컴포넌트
+│   ├── ui/                # UI 기본 컴포넌트
+│   ├── Header.tsx         # 헤더 (PDF 다운로드 버튼 포함)
+│   ├── PDFDownloadButton.tsx # PDF 다운로드 전용 버튼
+│   └── ...                # 기타 컴포넌트
+├── lib/                   # 유틸리티 함수
+│   └── pdf-generator.ts   # PDF 생성 로직
+├── hooks/                 # Custom React Hooks
+└── types/                 # TypeScript 타입 정의
 ```
 
-## 🔍 테스트
+## PDF 생성 관련 파일
 
-로컬 또는 스테이징 API 서버가 필요합니다. 아래 환경 변수를 설정하고 서버를 실행하세요.
+- `lib/pdf-generator.ts`: PDF 생성 핵심 로직
+- `components/PDFDownloadButton.tsx`: PDF 다운로드 버튼 컴포넌트
+- `app/globals.css`: PDF 전용 스타일 정의
+- `app/test-pdf/page.tsx`: PDF 기능 테스트 페이지
 
-1. 백엔드 서버 실행 (예: 8080 포트)
-2. `.env.local` 설정: `NEXT_PUBLIC_API_BASE_URL=http://localhost:8080/reportly-api`
-3. 프론트 실행: `npm run dev`
+## 문제 해결
 
-## 📝 API 문서
+### "oklch" 색상 함수 오류
 
-자세한 API 명세는 `docs/rest-api/` 폴더를 참조하세요.
+- Tailwind CSS v4의 oklch 색상 함수를 안전한 hex 색상으로 대체
+- PDF 생성 시 색상 호환성 문제 해결
 
-## 🤝 기여하기
+### 차트 렌더링 문제
 
-1. Fork the Project
-2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the Branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
+- SVG 요소들의 PDF 변환 최적화
+- 차트 컨테이너에 PDF 전용 스타일 적용
 
-## 📄 라이선스
+### 메모리 사용량
+
+- 대용량 콘텐츠 처리 시 메모리 효율성 개선
+- 이미지 타임아웃 및 압축 옵션 적용
+
+## 라이선스
 
 이 프로젝트는 MIT 라이선스 하에 배포됩니다.
