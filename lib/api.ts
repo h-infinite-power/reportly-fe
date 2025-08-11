@@ -41,10 +41,6 @@ class ApiClient {
     options?: RequestInit
   ): Promise<T> {
     const url = `${this.baseUrl}${endpoint}`;
-    console.log(`🚀 API 호출: ${url}`);
-    console.log(
-      `📍 환경: ${this.baseUrl.includes("localhost") ? "로컬" : "프로덕션"}`
-    );
 
     try {
       const response = await fetch(url, {
@@ -61,7 +57,6 @@ class ApiClient {
 
       return (await response.json()) as T;
     } catch (error) {
-      console.error(`❌ API 요청 실패: ${endpoint}`, error);
       throw error;
     }
   }
@@ -78,7 +73,6 @@ class ApiClient {
 
   // 브랜드 추가 (레거시 엔드포인트)
   async addCompany(companyName: string): Promise<Company> {
-    console.log("📢 브랜드 추가 요청:", companyName);
     const res = await this.request<{ companyNo: string }>("/companies", {
       method: "POST",
       body: JSON.stringify({ companyName }),
@@ -88,7 +82,6 @@ class ApiClient {
 
   // 업종 추가 (레거시 엔드포인트)
   async addIndustry(industryName: string): Promise<Industry> {
-    console.log("📢 업종 추가 요청:", industryName);
     const res = await this.request<{ industryNo: string }>("/industries", {
       method: "POST",
       body: JSON.stringify({ industryName }),
@@ -101,7 +94,6 @@ class ApiClient {
     jobNo: string,
     data: AnalysisRequest
   ): Promise<AnalysisResult> {
-    console.log("📊 분석 요청 데이터:", data, "jobNo:", jobNo);
     const res = await this.request<{ key: string; no: string }>(`/jobs`, {
       method: "POST",
       body: JSON.stringify(data),

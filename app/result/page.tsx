@@ -49,25 +49,7 @@ function ResultsPage() {
     getCompetitorScores,
   } = useResultData();
 
-  // 디버깅을 위한 로그
-  console.log("🔍 Result Page Debug:", {
-    analysisResultNo,
-    totalScoreData: !!totalScoreData,
-    statistics: !!statistics,
-    detail: !!detail,
-    loading,
-    error,
-  });
 
-  // 통계 데이터 디버깅
-  if (statistics) {
-    console.log("📊 Statistics Debug:", {
-      targetCompanyCategories: statistics.targetCompanyCategoryScoreList.length,
-      competitorCategories: statistics.competitorCategoryAvgScoreList.length,
-      targetData: statistics.targetCompanyCategoryScoreList,
-      competitorData: statistics.competitorCategoryAvgScoreList,
-    });
-  }
 
   const [competitorScores, setCompetitorScores] = useState<
     AnalysisResultScores[]
@@ -83,7 +65,6 @@ function ResultsPage() {
       const scores = await getCompetitorScores(selectedCompetitor);
       setCompetitorScores(scores);
     } catch (error) {
-      console.error("경쟁사 점수 조회 실패:", error);
       setCompetitorScores([]);
     }
   }, [selectedCompetitor, getCompetitorScores]);
@@ -141,7 +122,6 @@ function ResultsPage() {
         setPdfProgress("");
       }, 1000);
     } catch (error) {
-      console.error("PDF 생성 실패:", error);
 
       let errorMessage = "PDF 생성에 실패했습니다.";
       if (error instanceof Error) {

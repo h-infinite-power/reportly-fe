@@ -24,7 +24,6 @@ export default function Header({
         // 기본적으로 현재 페이지를 PDF로 변환
         await generateCurrentPagePDF();
       } catch (error) {
-        console.error("PDF 다운로드 실패:", error);
         alert("PDF 다운로드에 실패했습니다. 다시 시도해주세요.");
       }
     }

@@ -32,7 +32,6 @@ export function useAnalysisForm(jobNo: string) {
         setIndustries(industriesData);
       } catch (err) {
         setError("데이터를 불러오는데 실패했습니다.");
-        console.error("Failed to load data:", err);
       } finally {
         setLoading(false);
       }
@@ -78,8 +77,6 @@ export function useAnalysisForm(jobNo: string) {
         competitorCompanyNoList: competitorList,
       });
 
-      console.log("🚀 API Response:", result);
-
       // 분석 결과 생성 후, 해당 job의 분석 결과 정보를 가져와서 첫 번째 기업의 analysisResultNo 사용
       try {
         const analysisResultsInfo = await apiClient.getAnalysisResultsInfo(
@@ -88,31 +85,21 @@ export function useAnalysisForm(jobNo: string) {
         if (analysisResultsInfo && analysisResultsInfo.length > 0) {
           const firstCompanyAnalysisResultNo =
             analysisResultsInfo[0].analysisResultNo;
-          console.log(
-            "🔗 Navigating to:",
-            `/result?jobNo=${result.no}&analysisResultNo=${firstCompanyAnalysisResultNo}`
-          );
           router.push(
             `/result?jobNo=${result.no}&analysisResultNo=${firstCompanyAnalysisResultNo}`
           );
         } else {
           // API에서 데이터를 가져올 수 없는 경우 기존 방식 사용
-          console.log(
-            "⚠️ 분석 결과 정보를 가져올 수 없어 jobNo 사용:",
-            `/result?jobNo=${result.no}&analysisResultNo=${result.no}`
-          );
           router.push(
             `/result?jobNo=${result.no}&analysisResultNo=${result.no}`
           );
         }
       } catch (infoError) {
-        console.warn("분석 결과 정보 조회 실패, jobNo 사용:", infoError);
         // API 호출 실패 시 기존 방식 사용
         router.push(`/result?jobNo=${result.no}&analysisResultNo=${result.no}`);
       }
     } catch (err) {
       setError("분석을 시작하는데 실패했습니다.");
-      console.error("Failed to start analysis:", err);
     } finally {
       setLoading(false);
     }
@@ -127,7 +114,6 @@ export function useAnalysisForm(jobNo: string) {
       setNewCompanyName("");
     } catch (err) {
       setError("브랜드 추가 실패");
-      console.error("브랜드 추가 실패:", err);
     } finally {
       setLoading(false);
     }
@@ -142,7 +128,6 @@ export function useAnalysisForm(jobNo: string) {
       setNewIndustryName("");
     } catch (err) {
       setError("업종 추가 실패");
-      console.error("업종 추가 실패:", err);
     } finally {
       setLoading(false);
     }

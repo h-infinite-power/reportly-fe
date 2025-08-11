@@ -36,10 +36,8 @@ export default function CategoryChart({
     }
     try {
       const scores = await getCompetitorScores(selectedCompetitor);
-      console.log("경쟁사 점수", scores); // ← 콘솔로 값 확인
       setCompetitorScores(scores);
     } catch (error) {
-      console.error("경쟁사 점수 조회 실패:", error);
       setCompetitorScores([]);
     }
   }, [selectedCompetitor, getCompetitorScores]);

@@ -17,8 +17,7 @@ export function useResultData() {
   const jobNo = searchParams.get("jobNo");
   const analysisResultNo = searchParams.get("analysisResultNo");
 
-  // 디버깅을 위한 로그
-  console.log("🔍 useResultData Debug:", { jobNo, analysisResultNo });
+
 
   const [totalScoreData, setTotalScoreData] = useState<TotalScoreData | null>(
     null
@@ -46,7 +45,6 @@ export function useResultData() {
 
         // jobNo가 있으면 기본 데이터와 회사 정보 로드 시도
         if (jobNo) {
-          console.log("📊 기본 데이터 로드 시도:", jobNo);
           try {
             const [totalScore, statisticsData, companyData] = await Promise.all(
               [
@@ -55,30 +53,23 @@ export function useResultData() {
                 apiClient.getAnalysisResultsInfo(jobNo),
               ]
             );
-            console.log("✅ 기본 데이터 로드 성공:", {
-              totalScore: !!totalScore,
-              statistics: !!statisticsData,
-              companyInfo: !!companyData,
-            });
             setTotalScoreData(totalScore);
             setStatistics(statisticsData);
             setCompanyInfo(companyData);
           } catch (err) {
-            console.warn("❌ 기본 데이터 로드 실패:", err);
+            // 기본 데이터 로드 실패 시 무시
           }
         }
 
         // analysisResultNo가 있으면 상세 데이터 로드 시도
         if (analysisResultNo) {
-          console.log("📋 상세 데이터 로드 시도:", analysisResultNo);
           try {
             const detailData = await apiClient.getAnalysisResultDetail(
               analysisResultNo
             );
-            console.log("✅ 상세 데이터 로드 성공:", !!detailData);
             setDetail(detailData);
           } catch (err) {
-            console.warn("❌ 상세 데이터 로드 실패:", err);
+            // 상세 데이터 로드 실패 시 무시
           }
         }
 
@@ -87,7 +78,6 @@ export function useResultData() {
           setError(null);
         }
       } catch (err) {
-        console.error("데이터 로드 중 오류:", err);
         // 전체 실패시에만 에러 상태 설정
         if (
           !totalScoreData &&
@@ -240,7 +230,6 @@ export function useResultData() {
       try {
         return await apiClient.getAnalysisResultScores(analysisResultNo);
       } catch (error) {
-        console.error("경쟁사 점수 조회 실패:", error);
         return [];
       }
     },
