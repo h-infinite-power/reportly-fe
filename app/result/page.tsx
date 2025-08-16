@@ -17,15 +17,12 @@ import { useResultData } from "@/hooks/use-result-data";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { apiClient } from "@/lib/api"; // API 클라이언트 import 필요
 import { AnalysisResultScores } from "@/types"; // 타입 import 필요
-import { generateCurrentPagePDF } from "@/lib/pdf-api";
 
 function ResultsPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [expandedPrompts, setExpandedPrompts] = useState<number[]>([0]);
   const [selectedCompetitor, setSelectedCompetitor] = useState<string>("");
-  const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
-  const [pdfProgress, setPdfProgress] = useState<string>("");
   const isMobile = useIsMobile();
   const contentRef = useRef<HTMLDivElement>(null);
 
@@ -48,8 +45,6 @@ function ResultsPage() {
     getPromptData,
     getCompetitorScores,
   } = useResultData();
-
-
 
   const [competitorScores, setCompetitorScores] = useState<
     AnalysisResultScores[]
@@ -88,57 +83,16 @@ function ResultsPage() {
     // 필요하면 경쟁사 선택시 추가 로직 작성 가능
   };
 
-  // PDF 다운로드 핸들러
-  const handleDownloadClick = async () => {
+  // 프린트 핸들러
+  const handlePrint = useCallback(() => {
     if (!contentRef.current) {
-      alert("PDF 생성에 필요한 콘텐츠를 찾을 수 없습니다.");
+      console.warn("프린트할 콘텐츠를 찾을 수 없습니다.");
       return;
     }
 
-    setIsGeneratingPDF(true);
-    setPdfProgress("페이지 준비 중...");
-
-    try {
-      const companyName = getFirstCompanyName() || "기업";
-      const filename = `reportly-${companyName}-분석결과.pdf`;
-
-      // 진행 상황 업데이트를 위한 타이머 설정
-      const progressTimer = setInterval(() => {
-        setPdfProgress((prev) => {
-          if (prev === "페이지 준비 중...") return "차트 렌더링 중...";
-          if (prev === "차트 렌더링 중...") return "이미지 변환 중...";
-          if (prev === "이미지 변환 중...") return "PDF 생성 중...";
-          return "PDF 생성 중...";
-        });
-      }, 2000);
-
-      await generateCurrentPagePDF(filename);
-
-      clearInterval(progressTimer);
-      setPdfProgress("완료!");
-
-      // 완료 메시지를 잠시 표시 후 초기화
-      setTimeout(() => {
-        setPdfProgress("");
-      }, 1000);
-    } catch (error) {
-
-      let errorMessage = "PDF 생성에 실패했습니다.";
-      if (error instanceof Error) {
-        errorMessage = error.message;
-      }
-
-      setPdfProgress("오류 발생");
-      alert(`PDF 생성에 실패했습니다: ${errorMessage}`);
-
-      // 오류 메시지를 잠시 표시 후 초기화
-      setTimeout(() => {
-        setPdfProgress("");
-      }, 3000);
-    } finally {
-      setIsGeneratingPDF(false);
-    }
-  };
+    // 프린트 실행 (원래 스타일 그대로)
+    window.print();
+  }, []);
 
   // 경쟁사 목록 (companyInfo에서 가져오기, detail이 있다면 병합)
   const companies =
@@ -170,11 +124,7 @@ function ResultsPage() {
           }}
         />
         <div className="relative z-10 flex flex-col items-center min-h-screen">
-          <Header
-            showDownloadButton
-            onDownloadClick={handleDownloadClick}
-            isGeneratingPDF={isGeneratingPDF}
-          />
+          <Header showDownloadButton onDownloadClick={handlePrint} />
           <LoadingSpinner />
         </div>
       </div>
@@ -195,11 +145,7 @@ function ResultsPage() {
           }}
         />
         <div className="relative z-10 flex flex-col items-center min-h-screen">
-          <Header
-            showDownloadButton
-            onDownloadClick={handleDownloadClick}
-            isGeneratingPDF={isGeneratingPDF}
-          />
+          <Header showDownloadButton onDownloadClick={handlePrint} />
           <ErrorDisplay
             message={error}
             onRetry={() => window.location.reload()}
@@ -226,11 +172,7 @@ function ResultsPage() {
           }}
         />
         <div className="relative z-10 flex flex-col items-center min-h-screen">
-          <Header
-            showDownloadButton
-            onDownloadClick={handleDownloadClick}
-            isGeneratingPDF={isGeneratingPDF}
-          />
+          <Header showDownloadButton onDownloadClick={handlePrint} />
           <ErrorDisplay message="분석 결과를 찾을 수 없습니다." />
         </div>
       </div>
@@ -258,12 +200,7 @@ function ResultsPage() {
       />
 
       <div className="relative z-10 flex flex-col items-center min-h-screen">
-        <Header
-          showDownloadButton
-          onDownloadClick={handleDownloadClick}
-          isGeneratingPDF={isGeneratingPDF}
-          pdfProgress={pdfProgress}
-        />
+        <Header showDownloadButton onDownloadClick={handlePrint} />
 
         {/* Main Content */}
         <main

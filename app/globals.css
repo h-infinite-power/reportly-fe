@@ -138,102 +138,39 @@
   background: rgba(255, 255, 255, 0.5);
 }
 
-/* PDF 생성 전용 스타일 */
-.pdf-export {
-  background: #ffffff !important;
-  color: #000000 !important;
-}
+/* 프린트 전용 스타일 */
+@media print {
+  /* 프린트 시 숨길 요소들 */
+  header,
+  footer,
+  button {
+    display: none !important;
+  }
 
-.pdf-export * {
-  background: #ffffff !important;
-  color: #000000 !important;
-  border-color: #e2e8f0 !important;
-}
+  /* 프린트 레이아웃 최적화 */
+  .min-h-screen {
+    min-height: auto !important;
+  }
 
-.pdf-export .bg-\[#08090A\] {
-  background: #ffffff !important;
-}
+  .gap-40 {
+    gap: 2rem !important;
+  }
 
-.pdf-export .text-\[#F7F8F8\] {
-  color: #000000 !important;
-}
+  .gap-20 {
+    gap: 1rem !important;
+  }
 
-.pdf-export .text-\[#8A8F98\] {
-  color: #4a5568 !important;
-}
+  .gap-14 {
+    gap: 1rem !important;
+  }
 
-.pdf-export .text-\[#8BBDFF\] {
-  color: #2563eb !important;
-}
+  .gap-8 {
+    gap: 0.5rem !important;
+  }
 
-.pdf-export .text-\[#ABF8AD\] {
-  color: #059669 !important;
-}
-
-.pdf-export .text-\[#FF9696\] {
-  color: #dc2626 !important;
-}
-
-.pdf-export .bg-white\/4 {
-  background: #f8fafc !important;
-}
-
-.pdf-export .border-white\/10 {
-  border-color: #e2e8f0 !important;
-}
-
-.pdf-export .bg-gradient-to-r {
-  background: #e2e8f0 !important;
-}
-
-/* 차트 관련 PDF 스타일 */
-.pdf-export svg {
-  background: #ffffff !important;
-  color: #000000 !important;
-}
-
-.pdf-export svg * {
-  background: transparent !important;
-}
-
-.pdf-export svg text {
-  fill: #000000 !important;
-  color: #000000 !important;
-}
-
-.pdf-export svg path {
-  stroke: #000000 !important;
-  fill: #000000 !important;
-}
-
-.pdf-export svg circle {
-  stroke: #000000 !important;
-  fill: #000000 !important;
-}
-
-.pdf-export svg rect {
-  stroke: #000000 !important;
-  fill: #000000 !important;
-}
-
-/* 차트 컨테이너 스타일 */
-.pdf-export [class*="chart"],
-.pdf-export [class*="Chart"] {
-  background: #ffffff !important;
-  border: 2px solid #e2e8f0 !important;
-}
-
-/* 메트릭 카드 스타일 */
-.pdf-export .bg-gradient-to-t {
-  background: #e2e8f0 !important;
-}
-
-.pdf-export .from-\[#4E49DD\] {
-  background: #3b82f6 !important;
-}
-
-.pdf-export .to-\[#6E9CBD\] {
-  background: #60a5fa !important;
+  .pt-14 {
+    padding-top: 1rem !important;
+  }
 }
 
 @layer base {
